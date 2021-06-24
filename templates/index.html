@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" style="background-image: url({% static 'images/background.jpg' %})">
+<head>
+
+    <meta charset="UTF-8">
+    <title>Reddit Comment Stream</title>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css"
+      integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+
+
+<link rel="stylesheet" href="{% static '/styles_index.css' %}" type="text/css">
+
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+  crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
+  integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30="
+  crossorigin="anonymous"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
+
+    </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous">
+
+</script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+
+</script>
+</head>
+
+<div id="whole_page" align="center" style="background-image: url({% static 'images/background.jpg' %})" >
+<body>
+<p id="fade_text_0" class="h2 text-light">Find a Reddit comment page and then copy the link</p>
+<br>
+<img src="{% static '/nba_example.png' %}" id="nba_example" >
+<p id="fade_text_1" class="h2 text-light">Paste it below <i class="fas fa-level-down-alt"></i></p>
+
+
+<div class="row">
+      <div class="col-md-6 center">
+{% if error %}
+        <p style="color: red;">
+            The Reddit Comment URL was not valid, please check the URL and try again.
+        </p>
+    {% endif %}
+            <form action="/process-url/" method="post" id="form_comment_url"  >
+                 {% csrf_token %}
+                <div class="input-group" >
+                 <input id="reddit_url"  type="text" name="reddit_url"
+                     value="{{ url }}" placeholder="Comment URL"  class="form-control">
+                    <span class="input-group-btn">
+                        <input type="submit" value="OK" class="btn btn-secondary">
+                    </span>
+                </div>
+            </form>
+
+      </div>
+</div>
+
+</body>
+
+    <script>
+
+
+
+// Function to wait before next fade in. Using promises and setTimeOut method.
+// Currently will resolve after one second.
+        function resolveAfter1Second() {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve('resolved');
+    }, 1000);
+  });
+}
+
+// Function fade_in_elements.
+// This will fade in the elements of the main screen.
+// This will not occur when the page is reloaded because of an error or to start a new comment stream
+async function fade_in_elements() {
+    var fade_in_wait = 1000;
+
+    $('#fade_text_0').hide();
+    $('#fade_text_1').hide();
+    $('#nba_example').hide()
+    $('#form_comment_url').hide()
+
+    $('#fade_text_0').fadeIn(fade_in_wait);
+
+    await resolveAfter1Second();
+
+    $('#nba_example').fadeIn(fade_in_wait);
+
+    await resolveAfter1Second();
+
+   $('#fade_text_1').fadeIn(fade_in_wait);
+
+   await resolveAfter1Second();
+
+  $('#form_comment_url').fadeIn(fade_in_wait);
+
+}
+
+fade_in_elements();
+
+
+    </script>
+</div>
+</html>
