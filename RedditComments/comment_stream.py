@@ -28,35 +28,30 @@ def get_comments(self, comment_url):
         # None is okay to return as views.py will handle this appropriately
         return None
 
-    # for performance if there are more than 300 comments in a thread only use replace_more with a 100 limit.
-    # replace_more will replace all comments that are actually a MoreComment object. However, this causes performance
-    # hits with large Reddit threads
-    """
-    if submission.num_comments > 1000:
-       submission.comments.replace_more(limit=50)
-    elif submission.num_comments > 300:
-        submission.comments.replace_more(limit=100)
-    else:
-        submission.comments.replace_more(limit=None)
-    """
-    # only get comments and then sort by newest comment
+
+    # only get newest comments
     i = 0
-    comment_list = submission.comments
+    submission.comment_sort = 'new'
+    comment_list = list(submission.comments)
     comments_sorted = []
     for comment in comment_list:
         if isinstance(comment, MoreComments):
+            # TODO Consider adding logic for loading more comments/replies
+            #comments_sorted + (comment.comments(update=True))
             continue
         comments_sorted.append(comment)
 
-    comments_sorted = sorted(comments_sorted, key=lambda comment: comment.created_utc, reverse=True)
     comments_returned = []
 
     for comment in comments_sorted:
         i += 1
-        comments_returned.append(str(datetime.fromtimestamp(comment.created_utc)) + " - " + comment.body)
+        comments_returned.append(comment.id + " - " +
+                                 str(datetime.fromtimestamp(comment.created_utc)) + " - " + comment.body)
 
     # return the comments only
     # print("number of comments: ", i)
 
     return comments_returned
+
+
 
