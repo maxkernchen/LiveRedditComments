@@ -28,7 +28,6 @@ def get_comments(self, comment_url):
         # None is okay to return as views.py will handle this appropriately
         return None
 
-
     # only get newest comments
     i = 0
     submission.comment_sort = 'new'
@@ -45,8 +44,10 @@ def get_comments(self, comment_url):
 
     for comment in comments_sorted:
         i += 1
-        comments_returned.append(comment.id + " - " +
-                                 str(datetime.fromtimestamp(comment.created_utc)) + " - " + comment.body)
+        # don't track deleted comments
+        if(comment.author is not None):
+            comments_returned.append(comment.author.name + " - " +
+                                     str(datetime.fromtimestamp(comment.created_utc)) + " - " + comment.body)
 
     # return the comments only
     # print("number of comments: ", i)

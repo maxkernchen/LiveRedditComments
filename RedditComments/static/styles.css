@@ -1,6 +1,9 @@
+:root{
+   --dark-color: #393d38;
+}
 .themeBtn
 {
-border-radius: 6px;
+   border-radius: 6px;
 }
 
 html {
@@ -9,3 +12,19 @@ html {
 body {
    min-height: 100%;
 }
+ul{
+   margin: 0%, auto;
+}
+li{
+   text-align: center;
+}
+
+.dark{
+   color:white;
+   background-color: var(--dark-color);
+}
+.light{
+   color: black;
+   background-color: white;
+}
+
