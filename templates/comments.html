@@ -54,7 +54,7 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <a href="/index_new_stream" class="btn btn-outline-primary" role="button">Create New Comment Stream</a>
     <br>
     <br>
-    <button onClick = "toggleTheme(false)" id="theme-btn" class="themeBtn btn btn-light"> Theme:
+    <button onClick="toggleTheme(false)" id="theme-btn" class="themeBtn btn btn-light"> Theme:
     <i id="theme-btn-icon" class="fas fa-sun"></i></button>
     <br>
     <br>
@@ -62,6 +62,7 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <div class="col-md-3 center">
     <select id="refresh-rate-options" class="selectpicker" data-style="btn-secondary">
+        <option value="5000">5 seconds</option>
         <option value="15000">15 seconds</option>
         <option selected="selected" value="30000">30 seconds</option>
         <option value="45000">45 seconds</option>
@@ -91,6 +92,10 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     {% endfor %}
 </ul>
 </div>
+
+<button id="refresh-btn" class="btn btn-primary">
+ <i class="fas fa-sync"></i>
+</button>
 </div>
 
 <script src={% static '/commentStream.js' %}></script>
