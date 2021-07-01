@@ -58,14 +58,14 @@ Promise.race([promise1, promise2, promise3]).then(function(value) {
   console.log(value);
 
 // make the ajax call to Django server if we have a > 0 refresh rate
+// and we have not scrolled to where the manual refresh button is showing
 // or if we were called from the refresh button manually
-if(refreshRateInt > 0 && value > 0 && (!scrolledDown || value == 2)){
+if((refreshRateInt > 0 && value > 0 && !scrolledDown) || value == 2){
   $.ajax({
     url: '/process-url/',
     type: 'get',
     success: function(data) {
-
-    reloadComments(data);
+      reloadComments(data);
     },
     // in case anything goes wrong with the ajax call.
     failure: function(data) {
