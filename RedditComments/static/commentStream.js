@@ -61,11 +61,23 @@ Promise.race([promise1, promise2, promise3]).then(function(value) {
 // and we have not scrolled to where the manual refresh button is showing
 // or if we were called from the refresh button manually
 if((refreshRateInt > 0 && value > 0 && !scrolledDown) || value == 2){
+  // scroll to top of page when refresh button clicked
+  if(value == 2){
+    $('html').animate({ scrollTop: 0 }, 'slow');
+  }
   $.ajax({
     url: '/process-url/',
     type: 'get',
-    success: function(data) {
-      reloadComments(data);
+    success: function(data, textStatus, jqXHR) {
+      // status will be 204 for no new comments found
+      if(jqXHR.status == 200){
+        reloadComments(data);
+      }
+      else{
+        $('#spinner').hide();
+        console.log('no new comments found');
+        startRace();
+      }
     },
     // in case anything goes wrong with the ajax call.
     failure: function(data) {
@@ -87,26 +99,25 @@ startRace();
 // Parameter Data - GET response data.
 async function reloadComments(data){
 
-      $('#spinner').hide();
+  $('#spinner').hide();
 
-     //reload entire page
-     // $("html").html($("html", data).html());
+  document.getElementById('inner-comment-list').insertAdjacentHTML('afterbegin', data);
+  // make sure theme persists between ajax calls.
+  toggleTheme(true);
+  $('#new-comments').hide();
+  $('#new-comments').fadeIn(500);
+  // wait so the div is not removed before it finishes fading in
+  await new Promise(r => setTimeout(r, 500));
 
-      $('#comments').html(data);
-      // make sure theme persists between ajax calls.
-       toggleTheme(true);
-      $('#comments').show();
+  // remove div for new comments so next call will only fade in new comments 
+  $('#new-comments').contents().unwrap();
 
-      // call entry method again.
-      startRace();
-
-
+  // call entry method again.
+  startRace();
 }
 // method that is called when any ajax call starts.
 // currently just for showing the spinner and keeping the dark or light theme.
 $( document ).ajaxStart(function() {
-
-  $('#comments').hide();
   $('#spinner').show();
   toggleTheme(true);
 });

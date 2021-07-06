@@ -38,6 +38,12 @@ li{
    box-shadow: .5px 5px 15px rgba(0,0,0,.5);
 
 }
+.hide{
+   display: none;
+}
+.center{
+   text-align: center;
+}
 
 
 

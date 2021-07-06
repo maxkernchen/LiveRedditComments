@@ -76,16 +76,18 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <br>
       <i class="fas fa-sync fa-spin fa-3x"></i>
 </div>
+<br>
 <div id="comments">
 
 <ul class="list-group list-group-flush">
 
+    <div id="inner-comment-list">
+    {%for item in comments_template%}
 
-{%for item in comments_template%}
-
-        <li class="list-group-item">{{item}}
-        </li>
-    {% endfor %}
+            <li class="list-group-item">{{item}}
+            </li>
+        {% endfor %}
+    </div>
 </ul>
 </div>
 
