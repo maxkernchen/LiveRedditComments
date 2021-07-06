@@ -38,11 +38,22 @@ li{
    box-shadow: .5px 5px 15px rgba(0,0,0,.5);
 
 }
-.hide{
-   display: none;
+#header{
+   display: inline-block;
+   min-height: 50px;
+   margin-left: 25vw;
+
+}
+.header-item{
+   
+   margin-right: 2vw;
 }
 .center{
    text-align: center;
+}
+#spinner{
+   display: inline-block;
+   position: fixed;
 }
 
 

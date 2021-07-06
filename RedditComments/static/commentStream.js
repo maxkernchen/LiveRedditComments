@@ -4,6 +4,12 @@ $('#refresh-btn').hide();
 // bool for when we scrolled down, this for tracking if we should refresh or not.
 // Similar to youtube or twitch comments where scrolling stops the refreshing. 
 var scrolledDown = false;
+
+var lightTheme = true;
+
+loadOrCreateCookie();
+toggleTheme(true);
+
 /* Create two promises that will race each other.
 1. promise1 - This promise is only resolved if refresh rate is not "Don't Refresh" ( > 0).
               It is resolved after the amount of the time the refresh rate is defined for passes.
@@ -16,6 +22,8 @@ var scrolledDown = false;
               list past the refresh options.
 
 */
+
+
 
 async function startRace (){
 // get current refresh rate if refresh rate < 0 we don't refresh.
@@ -99,6 +107,10 @@ startRace();
 // Parameter Data - GET response data.
 async function reloadComments(data){
 
+  // remove div for new comments so we only fade in new comments from server
+  if($('#new-comments').length){
+    $('#new-comments').contents().unwrap();
+  }
   $('#spinner').hide();
 
   document.getElementById('inner-comment-list').insertAdjacentHTML('afterbegin', data);
@@ -108,9 +120,6 @@ async function reloadComments(data){
   $('#new-comments').fadeIn(500);
   // wait so the div is not removed before it finishes fading in
   await new Promise(r => setTimeout(r, 500));
-
-  // remove div for new comments so next call will only fade in new comments 
-  $('#new-comments').contents().unwrap();
 
   // call entry method again.
   startRace();
@@ -131,22 +140,21 @@ Parameter - keep same - This means we just reload the current theme again.
 This is needed after the ajax call.
 */
 function toggleTheme(keepSame) {
-  
+
   let themeBtn      = document.getElementById('theme-btn');
-  let light         = themeBtn.classList.contains('btn-light');
   let icon          = document.getElementById('theme-btn-icon');
   let container     = document.getElementById('container');
   let comments      = document.getElementsByClassName('list-group-item');
- 
+  let tempThemeBool = false;
   // if currently set to light set to dark and visa versa.
-  if(light && !keepSame){
+  if(lightTheme && !keepSame){
     icon.classList.remove('fa-sun');
     icon.classList.add('fa-moon');
     themeBtn.classList.remove('btn-light');
     themeBtn.classList.add('btn-dark');
     container.classList.add('dark');
     document.body.classList.add('dark');
-    
+    tempThemeBool = false;
   }
   else if(!keepSame){
     icon.classList.remove('fa-moon');
@@ -155,13 +163,13 @@ function toggleTheme(keepSame) {
     themeBtn.classList.add('btn-light');
     container.classList.remove('dark');
     document.body.classList.remove('dark');
-    
+    tempThemeBool = true;   
   }
     
 
   for(let i = 0; i < comments.length; i++){
       if(keepSame){
-        if(light){
+        if(lightTheme){
           comments[i].classList.remove('dark');
         }
         else{
@@ -169,7 +177,7 @@ function toggleTheme(keepSame) {
         }
       }
       else{
-        if(light){
+        if(lightTheme){
           comments[i].classList.add('dark');
         }
         else{
@@ -180,12 +188,25 @@ function toggleTheme(keepSame) {
  
   //add body styles so it shows correctly during refresh
   if(keepSame){
-    if(light){
+    if(lightTheme){
       document.body.classList.remove('dark');
+      icon.classList.remove('fa-moon');
+      icon.classList.add('fa-sun');
+      themeBtn.classList.remove('btn-dark');
+      themeBtn.classList.add('btn-light');
     }
     else{
       document.body.classList.add('dark');
+      icon.classList.remove('fa-sun');
+      icon.classList.add('fa-moon');
+      themeBtn.classList.remove('btn-light');
+      themeBtn.classList.add('btn-dark');
     }
+  }
+
+  //update cookie after changes have been completed
+  if(!keepSame){
+    updateThemeCookie(tempThemeBool);
   }
 
 }
@@ -197,12 +218,10 @@ function toggleTheme(keepSame) {
 */
 function applyDropDownStyle(){
 
-  let themeBtn      = document.getElementById('theme-btn');
-  let light         = themeBtn.classList.contains('btn-light');
   let dropdownItems = document.getElementsByClassName('dropdown-item');
   let dropdownMenu  = document.getElementsByClassName('dropdown-menu')[0];
   
-  if(light){
+  if(lightTheme){
      dropdownMenu.classList.remove('dark'); 
      for(let i = 0; i < dropdownItems.length; i++){
           dropdownItems[i].classList.remove('dark');
@@ -230,5 +249,25 @@ function scrollListener(){
   }
   
 } 
+
+function updateThemeCookie(lightBool) {
+  let date = new Date();
+  date.setTime(date.getTime() + (7 * 24 * 60 * 60 * 1000));
+  document.cookie = 'theme_cookie=' + lightBool + '; ' + 'expires=' + date.toUTCString();
+  lightTheme = lightBool;
+}
+
+function loadOrCreateCookie(){
+  if(document.cookie.indexOf('theme_cookie=') >= 0){
+     let boolStr  = document.cookie
+     .split('; ')
+     .find(row => row.startsWith('theme_cookie='))
+     .split('=')[1];
+     lightTheme = (boolStr === 'true');
+  }
+  else{
+      updateThemeCookie(true);
+  }
+}
 
 window.addEventListener('scroll', scrollListener);

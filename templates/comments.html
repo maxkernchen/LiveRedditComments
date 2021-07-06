@@ -43,21 +43,16 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <body>
 <div id="container">
 <br>
-<br>
-<br>
+<div id="header">
 
-<div id="refresh_rate" align="center">
-    <a href="/index_new_stream" class="btn btn-outline-primary" role="button">Create New Comment Stream</a>
-    <br>
-    <br>
-    <button onClick="toggleTheme(false)" id="theme-btn" class="themeBtn btn btn-light"> Theme:
+    <a href="/index_new_stream" class="btn btn-outline-primary header-item" role="button">Create New Comment Stream</a>
+ 
+    <button onClick="toggleTheme(false)" id="theme-btn" class="themeBtn btn btn-light header-item"> Theme:
     <i id="theme-btn-icon" class="fas fa-sun"></i></button>
-    <br>
-    <br>
+    
     Refresh Rate
 
-    <div class="col-md-3 center">
-    <select id="refresh-rate-options" class="selectpicker" data-style="btn-secondary">
+    <select id="refresh-rate-options" class="selectpicker header-item" data-style="btn-secondary">
         <option value="5000">5 seconds</option>
         <option value="15000">15 seconds</option>
         <option selected="selected" value="30000">30 seconds</option>
@@ -65,18 +60,17 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <option value="60000">60 seconds</option>
         <option value="-1">Don't Refresh</option>
     </select>
-    </div>
+  
 
+<div id= "spinner" class="header-item">
+  <i class="fas fa-sync fa-spin fa-2x"></i>
 </div>
 
-
-<div id= "spinner" align="center">
-    Reloading Comments...
-    <br>
-    <br>
-      <i class="fas fa-sync fa-spin fa-3x"></i>
 </div>
 <br>
+<br>
+<br>
+
 <div id="comments">
 
 <ul class="list-group list-group-flush">
