@@ -19,10 +19,10 @@ para - comment_url - string of the full Reddit URL pointing to the comment page 
 def get_comments(self, comment_url, views_request):
     config = configparser.ConfigParser()
     config.read(os.getcwd() + '\RedditComments\praw.ini')
-    reddit_obj = praw.Reddit(client_id = config['bot1']['client_id'],
-                             client_secret = config['bot1']['client_secret'],
-                             user_agent = config['bot1']['user_agent'])
-    # get the submission from the link passed in
+    reddit_obj = praw.Reddit(client_id=config['bot1']['client_id'],
+                             client_secret=config['bot1']['client_secret'],
+                             user_agent=config['bot1']['user_agent'])
+
     try:
         submission = reddit_obj.submission(url=comment_url)
     except praw.exceptions.ClientException:
