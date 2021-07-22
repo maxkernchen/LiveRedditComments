@@ -6,12 +6,12 @@
     <meta charset="UTF-8">
     <title>Reddit Comment Stream</title>
 
+
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css"
  integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous">
 
 
 
-<link rel="stylesheet" href="{% static '/styles_index.css' %}" type="text/css">
 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"
@@ -22,17 +22,38 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+      <link href="https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600" rel="stylesheet">
 
+<link rel="stylesheet" href="{% static '/styles_index.css' %}" type="text/css">
 
     
 
 </head>
 
-<div id="whole_page" align="center" style="background-image: url({% static 'images/background.jpg' %})" >
 <body>
-<p id="fade_text_0" class="h2 text-light">Find a Reddit comment page and then copy the link</p>
+<div id="whole_page" align="center" style="background-image: url({% static 'images/background.jpg' %})" >
+
+<h2 class='index-header'>Stream comments from any Reddit Submission</h2>
 <br>
-<img src="{% static '/nba_example.png' %}" id="nba_example" >
+<br>
+<h4>Currently active Submissions:</h4>
+
+<div id="active-cards">
+ {%for active_sub in active_submissions_template%}
+
+    <div class="card active-card">
+      <div class="card-body active-body d-flex flex-column">
+        <h5 class="card-text">{{active_sub.subreddit_name}}</h5>
+        <p class="card-text post-title">{{active_sub.submission_title}}</p>
+        <p class="card-text">{{active_sub.num_comments}} Comments</p>
+        <p class="card-text">New comment every {{active_sub.one_comment_avg}} seconds</p>
+        <p class='hidden'>{{active_sub.submission_permalink}}<p/>
+        <h2 class="link mt-auto">Stream this thread</h2>
+      </div>
+    </div>
+
+  {% endfor %}
+ </div>
 <p id="fade_text_1" class="h2 text-light">Paste it below <i class="fas fa-level-down-alt"></i></p>
 
 
@@ -40,14 +61,14 @@
       <div class="col-md-6 center">
 {% if error %}
         <p style="color: red;">
-            The Reddit Comment URL was not valid, please check the URL and try again.
+            The Reddit URL was not valid, please review it and try again.
         </p>
-    {% endif %}
+{% endif %}
             <form action="/process-url/" method="post" id="form_comment_url"  >
                  {% csrf_token %}
                 <div class="input-group" >
                  <input id="reddit_url"  type="text" name="reddit_url"
-                     value="{{ url }}" placeholder="Comment URL"  class="form-control">
+                     value="" placeholder="Comment URL"  class="form-control">
                     <span class="input-group-btn">
                         <input type="submit" value="OK" class="btn btn-secondary">
                     </span>
@@ -56,53 +77,8 @@
 
       </div>
 </div>
-
-</body>
-
-    <script>
-
-
-
-// Function to wait before next fade in. Using promises and setTimeOut method.
-// Currently will resolve after one second.
-        function resolveAfter1Second() {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve('resolved');
-    }, 1000);
-  });
-}
-
-// Function fade_in_elements.
-// This will fade in the elements of the main screen.
-// This will not occur when the page is reloaded because of an error or to start a new comment stream
-async function fade_in_elements() {
-    var fade_in_wait = 1000;
-
-    $('#fade_text_0').hide();
-    $('#fade_text_1').hide();
-    $('#nba_example').hide()
-    $('#form_comment_url').hide()
-
-    $('#fade_text_0').fadeIn(fade_in_wait);
-
-    await resolveAfter1Second();
-
-    $('#nba_example').fadeIn(fade_in_wait);
-
-    await resolveAfter1Second();
-
-   $('#fade_text_1').fadeIn(fade_in_wait);
-
-   await resolveAfter1Second();
-
-  $('#form_comment_url').fadeIn(fade_in_wait);
-
-}
-
-fade_in_elements();
-
-
-    </script>
 </div>
+</body>
+<script src={% static '/index.js' %}></script>
+
 </html>

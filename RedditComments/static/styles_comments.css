@@ -6,12 +6,10 @@
    border-radius: 6px;
 }
 
-html {
-   height: 100%;
-}
-body {
-   min-height: 100%;
-}
+html, body {
+   margin: 0;
+   
+ }
 ul{
    margin: 0%, auto;
 }
@@ -27,6 +25,16 @@ li{
    color: black;
    background-color: white;
 }
+.post-link{
+   text-decoration: none;
+   font-size: x-large;
+   transition: .2s ease-out;
+   cursor: pointer;
+}
+.post-link:hover{
+   color: lightblue
+
+}
 #refresh-btn{
    width: 50px;
    height: 50px;
@@ -40,12 +48,11 @@ li{
 }
 #header{
    display: inline-block;
-   min-height: 50px;
-   margin-left: 25vw;
+   text-align: center;
+   width: 100vw
 
 }
 .header-item{
-   
    margin-right: 2vw;
 }
 .center{

@@ -35,7 +35,7 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css"
  integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous">
 
- <link rel="stylesheet" href="{% static '/styles.css' %}" type="text/css">
+ <link rel="stylesheet" href="{% static '/styles_comments.css' %}" type="text/css">
 
 </head>
 
@@ -45,7 +45,7 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <br>
 <div id="header">
 
-    <a href="/index_new_stream" class="btn btn-outline-primary header-item" role="button">Create New Comment Stream</a>
+    <a href="/index" class="btn btn-outline-primary header-item" role="button">Create New Comment Stream</a>
  
     <button onClick="toggleTheme(false)" id="theme-btn" class="themeBtn btn btn-light header-item"> Theme:
     <i id="theme-btn-icon" class="fas fa-sun"></i></button>
@@ -65,12 +65,12 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <div id= "spinner" class="header-item">
   <i class="fas fa-sync fa-spin fa-2x"></i>
 </div>
-
+<br>
+<br>
+<a href="{{post_url_template}}" class="post-link">{{title_template}}</a>
 </div>
 <br>
 <br>
-<br>
-
 <div id="comments">
 
 <ul class="list-group list-group-flush">

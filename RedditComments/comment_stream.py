@@ -11,12 +11,13 @@ import os
 
 """
 Method get_comments, this takes in a Reddit comment url string and passes it to the PRAW client.
-Currently this returns only the parent comment, no child comments. 
+Currently this returns only the parent comment, no child comments.
 Also it includes the time the comment was posted. These comments are order by newest submission.
 para - comment_url - string of the full Reddit URL pointing to the comment page of a post.
 """
 
-def get_comments(self, comment_url, views_request):
+
+def get_comments(comment_url, views_request):
     config = configparser.ConfigParser()
     config.read(os.getcwd() + '\RedditComments\praw.ini')
     reddit_obj = praw.Reddit(client_id=config['bot1']['client_id'],
@@ -57,5 +58,14 @@ def get_comments(self, comment_url, views_request):
 
     return comments_returned
 
+def get_submission_title( comment_url):
+    config = configparser.ConfigParser()
+    config.read(os.getcwd() + '\RedditComments\praw.ini')
+    reddit_obj = praw.Reddit(client_id=config['bot1']['client_id'],
+                             client_secret=config['bot1']['client_secret'],
+                             user_agent=config['bot1']['user_agent'])
+    # no need to try catch since at this point we will know that the URL is valid
+    submission = reddit_obj.submission(url=comment_url)
+    return submission.subreddit_name_prefixed + ' | ' + submission.title
 
 
