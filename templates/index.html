@@ -36,7 +36,7 @@
 <h2 class='index-header'>Stream comments from any Reddit Submission</h2>
 <br>
 <br>
-<h4>Currently active Submissions:</h4>
+<h4 class="text-light">Currently active Submissions:</h4>
 
 <div id="active-cards">
  {%for active_sub in active_submissions_template%}
@@ -45,8 +45,8 @@
       <div class="card-body active-body d-flex flex-column">
         <h5 class="card-text">{{active_sub.subreddit_name}}</h5>
         <p class="card-text post-title">{{active_sub.submission_title}}</p>
-        <p class="card-text">{{active_sub.num_comments}} Comments</p>
-        <p class="card-text">New comment every {{active_sub.one_comment_avg}} seconds</p>
+        <p class="card-text">{{active_sub.num_comments}} Comments
+                <br>(1 every {{active_sub.one_comment_avg}} seconds)</p>
         <p class='hidden'>{{active_sub.submission_permalink}}<p/>
         <h2 class="link mt-auto">Stream this thread</h2>
       </div>
@@ -54,8 +54,16 @@
 
   {% endfor %}
  </div>
-<p id="fade_text_1" class="h2 text-light">Paste it below <i class="fas fa-level-down-alt"></i></p>
 
+<br>
+<br>
+<h6 id="fade_text_1" class="text-light">Enter url or just the sumbission id (after comments/) below e.g.
+    <br>
+    <br>
+     www.reddit.com/r/olympics/comments/opzmdx/tokyo_2020_opening_ceremony_megathread/
+    <br>
+    opzmdx
+</h6>
 
 <div class="row">
       <div class="col-md-6 center">
@@ -77,6 +85,8 @@
 
       </div>
 </div>
+<br>
+<br>
 </div>
 </body>
 <script src={% static '/index.js' %}></script>

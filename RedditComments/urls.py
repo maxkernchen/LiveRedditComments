@@ -18,7 +18,5 @@ from django.urls import path
 from RedditComments import views
 urlpatterns = [
     path('index/', views.index, name='index'),
-    path('process-url/', views.process_reddit_url, name='reddit_url'),
-    path('index_new_stream/', views.index_new_stream, name='index_no_fade_in')
-
+    path('process-url/', views.process_reddit_url, name='reddit_url')
 ]

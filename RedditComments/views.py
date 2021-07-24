@@ -9,6 +9,9 @@ from .forms import RedditURL
 from . import comment_stream
 from . import active_submissions
 from RedditComments.models import ActiveSubmissions
+import logging
+logger = logging.getLogger(__name__)
+
 
 
 
@@ -19,16 +22,6 @@ param: request - request object that expects a response
 def index(request):
     return render(request, 'index.html', {'active_submissions_template':
                                               active_submissions.query_active_submissions()})
-
-"""
-Method for loading the index page for a new stream, this page does not use any faded in elements. Defined in URLS.py
-param: request - request object that expects a response
-"""
-
-
-def index_new_stream(request):
-    return render(request, 'index_no_fade_in.html')
-
 
 """
 Method for loading the comments page, will be used for both POST (original form submission) and GET 
@@ -45,28 +38,32 @@ def process_reddit_url(request):
 
         if form.is_valid():
             comment_url = form.cleaned_data['reddit_url']
-            # to persist the URL for future ajax calls.
-            request.session['comment_url_cookie'] = comment_url
+            submission_id = comment_stream.parse_submission_id(comment_url)
+            logger.info('Starting new stream for sub_id=' + submission_id)
+
+            request.session['submission_id'] = submission_id
             # initialize the cookie for storing alreay loaded comments, will be populated in comment stream call
             request.session['loaded_comments_cookie'] = []
-            comments = comment_stream.get_comments(comment_url, request)
+            comments = comment_stream.get_comments(submission_id, request)
 
             # Comments is None if any exceptions occur on the PRAW side
             if comments is not None and len(comments) > 0:
                 return render(request, 'comments.html', {'comments_template':
-                comments,'title_template':comment_stream.get_submission_title(comment_url),
-                                                         'post_url_template':comment_url})
+                comments,'title_template':comment_stream.get_submission_title(submission_id),
+                'post_url_template':comment_stream.get_submission_permalink(submission_id)})
             else:
-                return render(request, 'index.html', {'error': 'invalid url'})
+                return render(request, 'index.html', {'error': 'invalid url', 'active_submissions_template':
+                                              active_submissions.query_active_submissions()})
         else:
             # form found to be not valid.
-            return render(request, 'index_no_fade_in.html', {'error': 'invalid url'})
+            return render(request, 'index.html', {'error': 'invalid url', 'active_submissions_template':
+                                              active_submissions.query_active_submissions()})
     # ajax call for refresh will be a GET request
     if request.method == 'GET':
         # pull session cookie for comment url
-        comment_url_get = request.session['comment_url_cookie']
-        if comment_url_get:
-            comments = comment_stream.get_comments(comment_url_get.strip(), request)
+        submission_id_get = request.session['submission_id']
+        if submission_id_get:
+            comments = comment_stream.get_comments(submission_id_get, request)
             if(len(comments) > 0):
                 return render(request, 'comment_body.html', {'comments_template': comments})
             else:

@@ -4,6 +4,7 @@ import praw
 import praw.config
 import praw.exceptions
 import praw.models.reddit.more
+import prawcore.exceptions
 import requests
 from praw.models import MoreComments
 import os
@@ -17,7 +18,7 @@ para - comment_url - string of the full Reddit URL pointing to the comment page 
 """
 
 
-def get_comments(comment_url, views_request):
+def get_comments(submission_id, views_request):
     config = configparser.ConfigParser()
     config.read(os.getcwd() + '\RedditComments\praw.ini')
     reddit_obj = praw.Reddit(client_id=config['bot1']['client_id'],
@@ -25,25 +26,25 @@ def get_comments(comment_url, views_request):
                              user_agent=config['bot1']['user_agent'])
 
     try:
-        submission = reddit_obj.submission(url=comment_url)
-    except praw.exceptions.ClientException:
+        submission = reddit_obj.submission(id=submission_id)
+        # only get the newest comments
+        submission.comment_sort = 'new'
+        comment_list = list(submission.comments)
+    except (praw.exceptions.ClientException, prawcore.exceptions.NotFound) as e:
         # None is okay to return as views.py will handle this appropriately
         return None
 
-    # only get newest comments
     i = 0
-    submission.comment_sort = 'new'
-    comment_list = list(submission.comments)
     comments_sorted = []
     comments_cookie = []
+    # get session cookie which stored the previous list of loaded comments
     already_loaded_comments = views_request.session['loaded_comments_cookie']
     for comment in comment_list:
         if isinstance(comment, MoreComments):
-            # TODO Consider adding logic for loading more comments/replies
-            #comments_sorted + (comment.comments(update=True))
+            # for now we are only streaming top-level comments, no replies
             continue
         comments_sorted.append(comment)
-        # store just the comment id hex value for only loading new comments
+        # store just the comment id hex value to only load new comments between ajax calls
         comments_cookie.append(comment.id)
 
     comments_returned = []
@@ -58,14 +59,35 @@ def get_comments(comment_url, views_request):
 
     return comments_returned
 
-def get_submission_title( comment_url):
+def get_submission_title(submission_id):
     config = configparser.ConfigParser()
     config.read(os.getcwd() + '\RedditComments\praw.ini')
     reddit_obj = praw.Reddit(client_id=config['bot1']['client_id'],
                              client_secret=config['bot1']['client_secret'],
                              user_agent=config['bot1']['user_agent'])
     # no need to try catch since at this point we will know that the URL is valid
-    submission = reddit_obj.submission(url=comment_url)
+    submission = reddit_obj.submission(id=submission_id)
     return submission.subreddit_name_prefixed + ' | ' + submission.title
+
+def get_submission_permalink(submission_id):
+    config = configparser.ConfigParser()
+    config.read(os.getcwd() + '\RedditComments\praw.ini')
+    reddit_obj = praw.Reddit(client_id=config['bot1']['client_id'],
+                             client_secret=config['bot1']['client_secret'],
+                             user_agent=config['bot1']['user_agent'])
+    # no need to try catch since at this point we will know that the URL is valid
+    submission = reddit_obj.submission(id=submission_id)
+    return 'https://reddit.com' + submission.permalink
+
+def parse_submission_id(comment_url):
+    index_start = comment_url.find('comments')
+    # assume user has passed in just the 6 character submission id,
+    # if it's incorrect it will be caught by try catch in get_comments
+    if(index_start == -1):
+        return comment_url
+    # parse submission id which will start 9 characters after comments keyword in the url
+    # and is always 6 characters in length
+    else:
+        return comment_url[index_start+9:index_start+15]
 
 

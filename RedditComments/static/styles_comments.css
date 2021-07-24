@@ -49,7 +49,7 @@ li{
 #header{
    display: inline-block;
    text-align: center;
-   width: 100vw
+   width: 100%
 
 }
 .header-item{

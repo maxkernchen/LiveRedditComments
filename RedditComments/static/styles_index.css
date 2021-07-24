@@ -5,6 +5,7 @@
 
  html, body {
     margin: 0;
+    width: 99%;
     font-family: 'Montserrat', sans-serif;
   }
 .index-header{

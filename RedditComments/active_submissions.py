@@ -95,12 +95,15 @@ def add_excluded_subreddits(all_list, reddit_obj):
 
 def filter_posts(all_list):
     profanity.load_censor_words()
-    custom_badwords = ['roastme', 'idiots']
+    custom_badwords = []
+    with open(os.getcwd() + '\RedditComments\custom_profanity_keywords.txt') as file:
+        custom_badwords = file.read().splitlines()
     profanity.add_censor_words(custom_badwords)
     all_list = list(filter(lambda post: post.num_comments >= 1000 and not post.over_18, all_list))
     all_list = list(filter(lambda post: not profanity.contains_profanity(post.title) and
-                                        not is_profanity_split(post.subreddit_name_prefixed[2:]),
-                           all_list))
+                            not is_profanity_split(post.subreddit_name_prefixed[2:])
+                            # check both word splits and whole subreddit as a word
+                            and not profanity.contains_profanity(post.subreddit_name_prefixed[2:]), all_list))
     return all_list
 
 def is_profanity_split(input_str):
