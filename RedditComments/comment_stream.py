@@ -30,7 +30,7 @@ def get_comments(submission_id, views_request):
         # only get the newest comments
         submission.comment_sort = 'new'
         comment_list = list(submission.comments)
-    except (praw.exceptions.ClientException, prawcore.exceptions.NotFound) as e:
+    except (praw.exceptions.PRAWException, prawcore.PrawcoreException, praw.exceptions.RedditAPIException) as e:
         # None is okay to return as views.py will handle this appropriately
         return None
 
@@ -51,7 +51,7 @@ def get_comments(submission_id, views_request):
     for comment in comments_sorted:
         i += 1
         # don't track deleted comments or comments which we've already loaded
-        if(comment.author is not None and comment.id not in already_loaded_comments):
+        if(comment.author is not None and comment.id not in already_loaded_comments and not comment.stickied):
             comments_returned.append(comment.author.name + " - " +
                                      str(datetime.fromtimestamp(comment.created_utc)) + " - " + comment.body)
 

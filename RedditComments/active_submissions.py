@@ -4,6 +4,7 @@ import praw
 import praw.config
 import praw.exceptions
 import praw.models.reddit.more
+import prawcore.exceptions
 import requests
 from django.db import transaction
 from RedditComments.models import ActiveSubmissions
@@ -18,20 +19,29 @@ logger = logging.getLogger(__name__)
 def get_active_submissions():
     config = configparser.ConfigParser()
     config.read(os.getcwd() + '\RedditComments\praw.ini')
-    reddit_obj = praw.Reddit(client_id=config['bot1']['client_id'],
-                             client_secret=config['bot1']['client_secret'],
-                             user_agent=config['bot1']['user_agent'])
+    try:
+        reddit_obj = praw.Reddit(client_id=config['bot1']['client_id'],
+                                 client_secret=config['bot1']['client_secret'],
+                                 user_agent=config['bot1']['user_agent'])
 
-    logger.info('Starting new interation of active submissions')
-    all_submissions = list(reddit_obj.subreddit('all').hot(limit=5000))
+        logger.info('Starting new iteration of active submissions')
+
+        all_submissions = list(reddit_obj.subreddit('all').hot(limit=5000))
+    except (praw.exceptions.PRAWException, prawcore.PrawcoreException, praw.exceptions.RedditAPIException) as e:
+        # None is okay as the thread will just wait for next 5 minute interval
+        return None
     add_excluded_subreddits(all_submissions, reddit_obj)
-
     filtered_posts = filter_posts(all_submissions)
+
     avg_time_dict = {}
     for i in range(len(filtered_posts)):
-        filtered_posts[i].comment_sort = 'new'
-        post = filtered_posts[i]
-        comment_list_post = list(post.comments)
+        try:
+            filtered_posts[i].comment_sort = 'new'
+            post = filtered_posts[i]
+            comment_list_post = list(post.comments)
+        except(praw.exceptions.PRAWException, prawcore.PrawcoreException, praw.exceptions.RedditAPIException) as e:
+            # None is okay as the thread will just wait for next 5 minute interval
+            return None
         avg_time_between_comments = 0
         # look at avg time between comment posted for a portion of newest comments
         num_comments = 0
@@ -57,7 +67,7 @@ def get_active_submissions():
         if(i == 5):
             break
         i+=1
-    logger.info('Finished interation of active submissions')
+    logger.info('Finished iteration of active submissions')
 def store_post_data(post, rank, avg_comment_time):
     ActiveSubmissions.objects.filter(rank=rank).delete()
     title = post.title
@@ -88,10 +98,6 @@ def query_active_submissions():
 def add_excluded_subreddits(all_list, reddit_obj):
     all_list += list(reddit_obj.subreddit('nfl').hot(limit=10))
     all_list += list(reddit_obj.subreddit('soccer').hot(limit=10))
-    wsb = list(reddit_obj.subreddit('wallstreetbets').hot(limit=10))
-    all_list += wsb
-
-
 
 def filter_posts(all_list):
     profanity.load_censor_words()
@@ -99,6 +105,7 @@ def filter_posts(all_list):
     with open(os.getcwd() + '\RedditComments\custom_profanity_keywords.txt') as file:
         custom_badwords = file.read().splitlines()
     profanity.add_censor_words(custom_badwords)
+
     all_list = list(filter(lambda post: post.num_comments >= 1000 and not post.over_18, all_list))
     all_list = list(filter(lambda post: not profanity.contains_profanity(post.title) and
                             not is_profanity_split(post.subreddit_name_prefixed[2:])

@@ -2,17 +2,10 @@
 {% load static %}
 <html lang="en" style="background-image: url({% static 'images/background.jpg' %})">
 <head>
-
-    <meta charset="UTF-8">
-    <title>Reddit Comment Stream</title>
-
+<title>Reddit Comment Stream</title>
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css"
  integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous">
-
-
-
-
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"
     integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
@@ -33,7 +26,7 @@
 <body>
 <div id="whole_page" align="center" style="background-image: url({% static 'images/background.jpg' %})" >
 
-<h2 class='index-header'>Stream comments from any Reddit Submission</h2>
+<h2 class='text-light'>Stream comments from any Reddit Submission</h2>
 <br>
 <br>
 <h4 class="text-light">Currently active Submissions:</h4>
@@ -57,34 +50,41 @@
 
 <br>
 <br>
-<h6 id="fade_text_1" class="text-light">Enter url or just the sumbission id (after comments/) below e.g.
-    <br>
-    <br>
-     www.reddit.com/r/olympics/comments/opzmdx/tokyo_2020_opening_ceremony_megathread/
-    <br>
-    opzmdx
-</h6>
+<div id="all-input-div">
+  <h6 id="fade_text_1" class="text-light">Enter url or just the submission id (after comments/) below e.g.
+      <br>
+      <br>
+      www.reddit.com/r/olympics/comments/opzmdx/tokyo_2020_opening_ceremony_megathread/
+      <br>
+      opzmdx
+  </h6>
 
-<div class="row">
-      <div class="col-md-6 center">
-{% if error %}
-        <p style="color: red;">
-            The Reddit URL was not valid, please review it and try again.
-        </p>
-{% endif %}
-            <form action="/process-url/" method="post" id="form_comment_url"  >
-                 {% csrf_token %}
-                <div class="input-group" >
-                 <input id="reddit_url"  type="text" name="reddit_url"
-                     value="" placeholder="Comment URL"  class="form-control">
-                    <span class="input-group-btn">
-                        <input type="submit" value="OK" class="btn btn-secondary">
-                    </span>
-                </div>
-            </form>
 
-      </div>
+  <div class="input-fields">
+    
+    {% if error %}
+            <p style="color: red;">
+                The Reddit URL or Submission ID was not valid, please review it and try again.
+            </p>
+    {% endif %}
+                <form action="/process-url/" method="post" id="form_comment_url">
+                    {% csrf_token %}
+                    <div class="input-group" >
+                    <input id="reddit_url"  type="text" name="reddit_url"
+                        value="" placeholder="Comment URL"  class="form-control">
+                        <span class="input-group-btn">
+                            <input type="submit" value="OK" class="btn btn-secondary">
+                        </span>
+                    </div>
+                </form>
+  </div>
 </div>
+
+<div id= "spinner" class="center">
+  <h4 class="text-light">Loading submission...</h4>
+  <i class="fas fa-sync fa-spin fa-2x light"></i>
+</div>
+
 <br>
 <br>
 </div>

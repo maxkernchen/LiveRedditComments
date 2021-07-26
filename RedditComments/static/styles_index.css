@@ -2,27 +2,24 @@
 :root{
     --off-white: #e3ebec;
  }
-
  html, body {
     margin: 0;
     width: 99%;
     font-family: 'Montserrat', sans-serif;
   }
-.index-header{
-    color: white;
 
-}
 .center{
     margin: 0 auto;
-    float: none;
 }
 #active-cards{
     display: inline-flex;
     flex-flow: row wrap;
+    justify-items: center;
 }
 .active-card{
-    width: 200px;
-    margin: 10px;
+    width: 17vw;
+    margin: 7px;
+    min-height: 35vh;
     box-shadow: 10px 7px 3px;
 }
 .active-body{
@@ -32,9 +29,19 @@
 .link {
     font-size: large;
     transition: .2s ease-out;
-    cursor: pointer;
-   
-  }
+    cursor: pointer;   
+}
+
+/* naming convention for form is using underscores to match django side */
+#reddit_url{
+    min-width:40vw;
+}
+
+.input-fields{
+    display: inline-flex;
+    justify-items: center;
+    flex-direction: column;
+}
 
   .link:hover {
     color: lightblue
@@ -44,5 +51,8 @@
   }
   .hidden{
     display: none;
+ }
+ #spinner{
+     color: white;
  }
  

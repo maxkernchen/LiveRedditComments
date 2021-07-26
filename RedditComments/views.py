@@ -64,7 +64,7 @@ def process_reddit_url(request):
         submission_id_get = request.session['submission_id']
         if submission_id_get:
             comments = comment_stream.get_comments(submission_id_get, request)
-            if(len(comments) > 0):
+            if(comments is not None and len(comments) > 0):
                 return render(request, 'comment_body.html', {'comments_template': comments})
             else:
                 return HttpResponse(status=204)

@@ -62,6 +62,9 @@ li{
    display: inline-block;
    position: fixed;
 }
+#comments{
+   word-break: break-word;
+}
 
 
 
