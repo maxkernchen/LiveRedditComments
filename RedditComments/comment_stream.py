@@ -8,17 +8,26 @@ import prawcore.exceptions
 import requests
 from praw.models import MoreComments
 import os
+__author__  = 'Max Kernchen'
+__version__ = '1.0.'
+__email__   = 'max.f.kernchen@gmail.com'
 
-
+""" This module's main purpose is to retreive the latest comments from a submission, it is called often via ajax or the 
+post request from our index form submission.
 """
-Method get_comments, this takes in a Reddit comment url string and passes it to the PRAW client.
-Currently this returns only the parent comment, no child comments.
-Also it includes the time the comment was posted. These comments are order by newest submission.
-para - comment_url - string of the full Reddit URL pointing to the comment page of a post.
-"""
 
+def get_comments(submission_id, views_request, is_post):
+    """ Method get_comments will take in a submission_id (6 character alphanumeric value) from views.py
+        and find the submission/newest comments. These comments are then compared to already loaded comments
+        stored in the session cookie. Any comments comments that different from the already loaded ones are returned to
+        views.py in a formatted string.
+        ----params-----
+        @submission_id - the 6 char alphanumeric value that represents a submission
+        @views_request - the request object from views.py, this is passed in to update the session cookie.
+        @is_post       - the request is a POST so we will need additonal info returned in our dictionary
 
-def get_comments(submission_id, views_request):
+        @return a dictionary with comments sorted by newest, the title and permalink if this is a POST request
+    """
     config = configparser.ConfigParser()
     config.read(os.getcwd() + '\RedditComments\praw.ini')
     reddit_obj = praw.Reddit(client_id=config['bot1']['client_id'],
@@ -30,7 +39,8 @@ def get_comments(submission_id, views_request):
         # only get the newest comments
         submission.comment_sort = 'new'
         comment_list = list(submission.comments)
-    except (praw.exceptions.PRAWException, prawcore.PrawcoreException, praw.exceptions.RedditAPIException) as e:
+    except (praw.exceptions.PRAWException, prawcore.PrawcoreException,
+            praw.exceptions.RedditAPIException) as e:
         # None is okay to return as views.py will handle this appropriately
         return None
 
@@ -55,31 +65,25 @@ def get_comments(submission_id, views_request):
             comments_returned.append(comment.author.name + " - " +
                                      str(datetime.fromtimestamp(comment.created_utc)) + " - " + comment.body)
 
+    #update session cookie with newly streamed comments
     views_request.session['loaded_comments_cookie'] = comments_cookie
-
-    return comments_returned
-
-def get_submission_title(submission_id):
-    config = configparser.ConfigParser()
-    config.read(os.getcwd() + '\RedditComments\praw.ini')
-    reddit_obj = praw.Reddit(client_id=config['bot1']['client_id'],
-                             client_secret=config['bot1']['client_secret'],
-                             user_agent=config['bot1']['user_agent'])
-    # no need to try catch since at this point we will know that the URL is valid
-    submission = reddit_obj.submission(id=submission_id)
-    return submission.subreddit_name_prefixed + ' | ' + submission.title
-
-def get_submission_permalink(submission_id):
-    config = configparser.ConfigParser()
-    config.read(os.getcwd() + '\RedditComments\praw.ini')
-    reddit_obj = praw.Reddit(client_id=config['bot1']['client_id'],
-                             client_secret=config['bot1']['client_secret'],
-                             user_agent=config['bot1']['user_agent'])
-    # no need to try catch since at this point we will know that the URL is valid
-    submission = reddit_obj.submission(id=submission_id)
-    return 'https://reddit.com' + submission.permalink
+    # store results in a dictionary, if this is a POST request on initial form submission
+    # include the title and permalink
+    submission_comments_dict = {}
+    if(is_post):
+        submission_comments_dict['title'] = submission.subreddit_name_prefixed + ' | ' + submission.title
+        submission_comments_dict['permalink'] = 'https://www.reddit.com' + submission.permalink
+    submission_comments_dict['comments'] = comments_returned
+    return submission_comments_dict
 
 def parse_submission_id(comment_url):
+    """ Simple helper method which will parse the full url of the reddit page and find the submission_id only
+    This is useful as it allows the user to enter only the partial url or just the submission_id in the form.
+     -----params----
+    @comment_url - the url or submission id the user has passed into our form
+
+    @return - just the parsed submission_id which we will store in a session cookie
+    """
     index_start = comment_url.find('comments')
     # assume user has passed in just the 6 character submission id,
     # if it's incorrect it will be caught by try catch in get_comments

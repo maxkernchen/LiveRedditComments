@@ -1,22 +1,18 @@
 :root{
    --dark-color: #393d38;
 }
-.themeBtn
-{
+.themeBtn{
    border-radius: 6px;
 }
-
 html, body {
-   margin: 0;
-   
- }
+   margin: 0;   
+}
 ul{
    margin: 0%, auto;
 }
 li{
    text-align: center;
 }
-
 .dark{
    color:white;
    background-color: var(--dark-color);
@@ -33,7 +29,6 @@ li{
 }
 .post-link:hover{
    color: lightblue
-
 }
 #refresh-btn{
    width: 50px;
@@ -50,7 +45,6 @@ li{
    display: inline-block;
    text-align: center;
    width: 100%
-
 }
 .header-item{
    margin-right: 2vw;
@@ -65,6 +59,4 @@ li{
 #comments{
    word-break: break-word;
 }
-
-
 

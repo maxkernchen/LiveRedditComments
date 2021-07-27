@@ -5,98 +5,92 @@ $('#refresh-btn').hide();
 // Similar to youtube or twitch comments where scrolling stops the refreshing. 
 var scrolledDown = false;
 
+//global boolean for our theme, light == true, dark == false
 var lightTheme = true;
 
 loadOrCreateCookie();
 toggleTheme(true);
 
-/* Create two promises that will race each other.
-1. promise1 - This promise is only resolved if refresh rate is not "Don't Refresh" ( > 0).
+/* Create three promises that will race each other.
+1. promise1 - This promise is only resolved if refresh rate is not 'Don't Refresh' ( > 0).
               It is resolved after the amount of the time the refresh rate is defined for passes.
-               Then we will call ajax to reload the comments in page.
+              Then we will call ajax to reload the comments in page.
 2. promise2 - This promise is resolved whenever the refresh rate drop down has changed value.
-                This means that if the refresh rate is changed while we are waiting for a new refresh, the current
-               refresh wait time is reset.
-3. promise3 - This promise is resolved when the refresh floating button is clicked, will immediately reload comments.
-              It will only resolve if the refresh button is visible which is when we scroll down on the comment 
+              This means that if the refresh rate is changed while we are waiting for a new refresh, the current
+              refresh wait time is reset.
+3. promise3 - This promise is resolved when the refresh floating button is clicked, and will immediately reload comments.
+              It will only resolve if the refresh button is visible which is the user scrolls down on the comment 
               list past the refresh options.
 
 */
 
-
-
 async function startRace (){
-// get current refresh rate if refresh rate < 0 we don't refresh.
-let refreshRateSelect = document.getElementById("refresh-rate-options");
-let refreshRateInt = refreshRateSelect.options[refreshRateSelect.selectedIndex].value;
+  // get current refresh rate if refresh rate < 0 we don't refresh.
+  let refreshRateSelect = document.getElementById('refresh-rate-options');
+  let refreshRateInt = refreshRateSelect.options[refreshRateSelect.selectedIndex].value;
 
-let promise1 = new Promise(function(resolve) {
-  console.log("in Promise1");
-  // only resolve this promise if refresh rate is not set to don't refresh.'
-  // resolve after the amount of time defined in the refresh rate drop down.
-    if(refreshRateInt > 0 && !scrolledDown)
-    {
-      setTimeout(resolve, refreshRateInt, '1');
-    }
-    else{
-      // resolve after 2 seconds so we are not calling too often
-      // to check if we have scrolled back up to the top
-      setTimeout(resolve, 2000, '-3');;
-    }
-  
-});
-
-// second promise which is resolved whenever the refresh rate drop is changed.
-let promise2 = new Promise(function(resolve) {
-    $("#refresh-rate-options").change(function(){
-      console.log("in Promise2");
-    // resolve with -2 as other values have been taken by the refresh rate promise1.
-        resolve('-2');
-    });
-});
-
-let promise3 = new Promise(function(resolve) {
-  $("#refresh-btn").click(function(){
-      console.log("in Promise3");
-      resolve('2');
+  let promise1 = new Promise(function(resolve) {
+    // only resolve this promise if refresh rate is not set to don't refresh.'
+    // resolve after the amount of time defined in the refresh rate drop down.
+      if(refreshRateInt > 0 && !scrolledDown) {
+        setTimeout(resolve, refreshRateInt, '1');
+      }
+      else {
+        // resolve after 2 seconds so we are not calling too often to check if we have scrolled back up to the top
+        setTimeout(resolve, 2000, '-3');;
+      }
+    
   });
-});
 
-Promise.race([promise1, promise2, promise3]).then(function(value) {
-  console.log(value);
+  // second promise which is resolved whenever the refresh rate drop is changed.
+  let promise2 = new Promise(function(resolve) {
+      $('#refresh-rate-options').change(function(){
+        console.log('in Promise2');
+          resolve('-2');
+      });
+  });
 
-// make the ajax call to Django server if we have a > 0 refresh rate
-// and we have not scrolled to where the manual refresh button is showing
-// or if we were called from the refresh button manually
-if((refreshRateInt > 0 && value > 0 && !scrolledDown) || value == 2){
-  // scroll to top of page when refresh button clicked
-  if(value == 2){
-    $('html').animate({ scrollTop: 0 }, 'slow');
-  }
-  $.ajax({
-    url: '/process-url/',
-    type: 'get',
-    success: function(data, textStatus, jqXHR) {
-      // status will be 204 for no new comments found
-      if(jqXHR.status == 200){
-        reloadComments(data);
-      }
-      else{
-        $('#spinner').hide();
-        console.log('no new comments found');
-        startRace();
-      }
-    },
-    // in case anything goes wrong with the ajax call.
-    failure: function(data) {
-        console.log('refreshing comments failed');
-    }
+  let promise3 = new Promise(function(resolve) {
+    $('#refresh-btn').click(function(){
+        console.log('in Promise3');
+        resolve('2');
     });
+  });
+
+  Promise.race([promise1, promise2, promise3]).then(function(value) {
+
+  // Make the ajax call to Django server if we have a > 0 refresh rate
+  // and we have not scrolled to where the manual refresh button is showing.
+  // But always refresh if we were called from the refresh button directly (resolve code 2)
+  if((refreshRateInt > 0 && value > 0 && !scrolledDown) || value == 2){
+    // scroll to top of page when refresh button clicked
+        if(value == 2){
+          $('html').animate({ scrollTop: 0 }, 'slow');
+        }
+        $.ajax({
+          url: '/process-url/',
+          type: 'get',
+          success: function(data, textStatus, jqXHR) {
+            // status will be 204 for no new comments found
+            if(jqXHR.status == 200){
+              reloadComments(data);
+            }
+            else{
+              $('#spinner').hide();
+              startRace();
+            }
+          },
+          // in case anything goes wrong with the ajax call, log it and try again.
+          failure: function(data) {
+              console.log('refreshing comments failed');
+              startRace()
+          }
+          });
   }
   else{
       startRace();
-  }
-});
+    }
+  });
 
 }
 // Entry point. This function is recalled often.
@@ -104,7 +98,7 @@ startRace();
 
 
 // hide spinner and populate data from GET response to entire page.
-// Parameter Data - GET response data.
+// @param Data - GET response data, which will be our html template generated by views.py
 async function reloadComments(data){
 
   // remove div for new comments so we only fade in new comments from server
@@ -131,13 +125,10 @@ $( document ).ajaxStart(function() {
   toggleTheme(true);
 });
 
-// use bootstrap select built-in event to trigger themes for drop down menus
-$('#refresh-rate-options').on('show.bs.select', applyDropDownStyle);
 
 
 /* Method toggleTheme. This method allows us the change the theme of the page from dark to light.
-Parameter - keep same - This means we just reload the current theme again. 
-This is needed after the ajax call.
+@param - keepSame - This means we just reload the current theme again, this is needed after the ajax call.
 */
 function toggleTheme(keepSame) {
 
@@ -146,7 +137,7 @@ function toggleTheme(keepSame) {
   let container     = document.getElementById('container');
   let comments      = document.getElementsByClassName('list-group-item');
   let tempThemeBool = false;
-  // if currently set to light set to dark and visa versa.
+  // if currently set to light set to dark and vice versa.
   if(lightTheme && !keepSame){
     icon.classList.remove('fa-sun');
     icon.classList.add('fa-moon');
@@ -166,7 +157,7 @@ function toggleTheme(keepSame) {
     tempThemeBool = true;   
   }
     
-
+  // set theme for comment bodys
   for(let i = 0; i < comments.length; i++){
       if(keepSame){
         if(lightTheme){
@@ -235,28 +226,37 @@ function applyDropDownStyle(){
   }
 }
 
-var commentDiv = document.getElementById('comments');
+// use bootstrap select built-in event to trigger themes for drop down menus
+$('#refresh-rate-options').on('show.bs.select', applyDropDownStyle);
 
+var commentDiv = document.getElementById('comments');
+// Listen for when the scrolled window is below the header, 
+// this is when we will show our manual refresh button on the bottom right
 function scrollListener(){
   if(window.scrollY > commentDiv.offsetTop){
     scrolledDown = true;
     $('#refresh-btn').show();
-
   }
   else if(window.scrollY <= commentDiv.offsetTop){
     scrolledDown = false;
     $('#refresh-btn').hide();
   }
-  
 } 
 
+window.addEventListener('scroll', scrollListener);
+
+
+// create a theme cookie which lasts for 1 week, this allows the user to exit 
+// and then still have the same theme when returing later
+//@param lightBool - boolean value for if this should be light or dark theme (light == true, dark == false) 
 function updateThemeCookie(lightBool) {
   let date = new Date();
   date.setTime(date.getTime() + (7 * 24 * 60 * 60 * 1000));
   document.cookie = 'theme_cookie=' + lightBool + '; ' + 'expires=' + date.toUTCString();
   lightTheme = lightBool;
 }
-
+// helper method which will check if the theme cookie exists or not.
+// If it does exist apply existing theme else create new cookie and default to light theme.
 function loadOrCreateCookie(){
   if(document.cookie.indexOf('theme_cookie=') >= 0){
      let boolStr  = document.cookie
@@ -270,4 +270,3 @@ function loadOrCreateCookie(){
   }
 }
 
-window.addEventListener('scroll', scrollListener);

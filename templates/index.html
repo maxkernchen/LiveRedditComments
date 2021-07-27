@@ -2,92 +2,82 @@
 {% load static %}
 <html lang="en" style="background-image: url({% static 'images/background.jpg' %})">
 <head>
-<title>Reddit Comment Stream</title>
+  <title>Reddit Comment Stream</title>
 
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css"
- integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css"
+  integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous">
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"
-    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+      integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
-      integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
-      <link href="https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600" rel="stylesheet">
 
-<link rel="stylesheet" href="{% static '/styles_index.css' %}" type="text/css">
-
-    
-
+  <link rel="stylesheet" href="{% static '/styles_index.css' %}" type="text/css">
 </head>
-
 <body>
-<div id="whole_page" align="center" style="background-image: url({% static 'images/background.jpg' %})" >
+  <div id="container">
+    <h2 class='text-light'>Stream comments from any Reddit Submission</h2>
+    <br>
+    <br>
+    <h4 class="text-light">Currently active Submissions:</h4>
 
-<h2 class='text-light'>Stream comments from any Reddit Submission</h2>
-<br>
-<br>
-<h4 class="text-light">Currently active Submissions:</h4>
+    <div id="active-cards">
+      {%for active_sub in active_submissions_template%}
+          <div class="card active-card">
+            <div class="card-body active-body d-flex flex-column">
+              <h5 class="card-text">{{active_sub.subreddit_name}}</h5>
+              <p class="card-text post-title">{{active_sub.submission_title}}</p>
+              <p class="card-text">{{active_sub.num_comments}} Comments
+                      <br>(1 every {{active_sub.one_comment_avg}} seconds)</p>
+              <p class='hidden'>{{active_sub.submission_permalink}}<p/>
+              <h2 class="link mt-auto">Stream this thread</h2>
+            </div>
+          </div>
+      {% endfor %}
+    </div>
+    <br>
+    <br>
+    <div id="all-input-container">
+      <h6 id="fade_text_1" class="text-light">Enter url or just the submission id (after comments/) below e.g.
+          <br>
+          <br>
+          www.reddit.com/r/olympics/comments/opzmdx/tokyo_2020_opening_ceremony_megathread/
+          <br>
+          opzmdx
+      </h6>
 
-<div id="active-cards">
- {%for active_sub in active_submissions_template%}
 
-    <div class="card active-card">
-      <div class="card-body active-body d-flex flex-column">
-        <h5 class="card-text">{{active_sub.subreddit_name}}</h5>
-        <p class="card-text post-title">{{active_sub.submission_title}}</p>
-        <p class="card-text">{{active_sub.num_comments}} Comments
-                <br>(1 every {{active_sub.one_comment_avg}} seconds)</p>
-        <p class='hidden'>{{active_sub.submission_permalink}}<p/>
-        <h2 class="link mt-auto">Stream this thread</h2>
+      <div class="input-fields">
+        {% if error %}
+          <p class="error">
+              The Reddit URL or Submission ID was not valid, please review it and try again.
+          </p>
+        {% endif %}
+        <form action="/process-url/" method="post" id="form_comment_url">
+            {% csrf_token %}
+            <div class="input-group" >
+              <input id="reddit_url"  type="text" name="reddit_url" value="" placeholder="Comment URL"  
+              class="form-control">
+                  <span class="input-group-btn">
+                      <input type="submit" value="OK" class="btn btn-secondary">
+                  </span>
+            </div>
+        </form>
       </div>
     </div>
 
-  {% endfor %}
- </div>
-
-<br>
-<br>
-<div id="all-input-div">
-  <h6 id="fade_text_1" class="text-light">Enter url or just the submission id (after comments/) below e.g.
-      <br>
-      <br>
-      www.reddit.com/r/olympics/comments/opzmdx/tokyo_2020_opening_ceremony_megathread/
-      <br>
-      opzmdx
-  </h6>
-
-
-  <div class="input-fields">
-    
-    {% if error %}
-            <p style="color: red;">
-                The Reddit URL or Submission ID was not valid, please review it and try again.
-            </p>
-    {% endif %}
-                <form action="/process-url/" method="post" id="form_comment_url">
-                    {% csrf_token %}
-                    <div class="input-group" >
-                    <input id="reddit_url"  type="text" name="reddit_url"
-                        value="" placeholder="Comment URL"  class="form-control">
-                        <span class="input-group-btn">
-                            <input type="submit" value="OK" class="btn btn-secondary">
-                        </span>
-                    </div>
-                </form>
+    <div id= "spinner" class="center">
+      <h4 class="text-light">Loading submission...</h4>
+      <i class="fas fa-sync fa-spin fa-2x light"></i>
+    </div>
+    <br>
+    <br>
   </div>
-</div>
-
-<div id= "spinner" class="center">
-  <h4 class="text-light">Loading submission...</h4>
-  <i class="fas fa-sync fa-spin fa-2x light"></i>
-</div>
-
-<br>
-<br>
-</div>
 </body>
 <script src={% static '/index.js' %}></script>
 
