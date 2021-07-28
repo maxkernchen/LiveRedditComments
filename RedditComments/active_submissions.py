@@ -115,7 +115,7 @@ def store_post_data(post, rank, avg_comment_time):
 
 def query_active_submissions():
     """ Query to ActiveSubmissions model to return all rows from the database.
-   
+
     @return - list of all ActiveSubmissions rows sorted by rank
     """
     all_act_subs = []

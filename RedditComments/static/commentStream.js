@@ -1,7 +1,7 @@
 $('#spinner').hide();
 $('#refresh-btn').hide();
 
-// bool for when we scrolled down, this for tracking if we should refresh or not.
+// bool for when scrolled down past our header, this for tracking if we should refresh or not.
 // Similar to youtube or twitch comments where scrolling stops the refreshing. 
 var scrolledDown = false;
 
@@ -45,7 +45,6 @@ async function startRace (){
   // second promise which is resolved whenever the refresh rate drop is changed.
   let promise2 = new Promise(function(resolve) {
       $('#refresh-rate-options').change(function(){
-        console.log('in Promise2');
           resolve('-2');
       });
   });
@@ -246,9 +245,10 @@ function scrollListener(){
 window.addEventListener('scroll', scrollListener);
 
 
-// create a theme cookie which lasts for 1 week, this allows the user to exit 
-// and then still have the same theme when returing later
-//@param lightBool - boolean value for if this should be light or dark theme (light == true, dark == false) 
+/* create a theme cookie which lasts for 1 week, this allows the user to exit
+and then still have the same theme when returing later
+@param lightBool - boolean value for if this should be light or dark theme (light == true, dark == false)
+*/
 function updateThemeCookie(lightBool) {
   let date = new Date();
   date.setTime(date.getTime() + (7 * 24 * 60 * 60 * 1000));
