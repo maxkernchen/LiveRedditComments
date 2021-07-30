@@ -47,6 +47,9 @@ def process_reddit_url(request):
             # initialize the cookie for storing alreay loaded comments, will be populated in comment stream call
             request.session['loaded_comments_cookie'] = []
             submission_comments_dict = comment_stream.get_comments(submission_id, request, True)
+            if(submission_comments_dict is None):
+                return render(request, 'index.html', {'error': 'invalid url', 'active_submissions_template':
+                    active_submissions.query_active_submissions()})
             submission_title = submission_comments_dict['title']
             submission_permalink = submission_comments_dict['permalink']
             comments = submission_comments_dict['comments']
