@@ -2,8 +2,7 @@ Live Reddit Comments
 
   
 
-Live Reddit Comments is a Django web application which will allow a user to stream the newest comments from any Reddit submission,  
-similar to live chat on Youtube.com or Twitch.com. This application utilizes the Reddit Python API library named PRAW - https://praw.readthedocs.io/en/stable/index.html 
+Live Reddit Comments is a Django web application which will allow a user to stream the newest comments from any Reddit submission, similar to live chat on Youtube.com or Twitch.com. This application utilizes the Reddit Python API library named PRAW - https://praw.readthedocs.io/en/stable/index.html 
 
   
 
