@@ -20,7 +20,7 @@ Features include:
 
   * Option to change refresh rate of comments 
 
-  * Comments stop refresh when scrolling and allow for a manual refresh 
+  * Comments stop refreshing when scrolling and allow for a manual refresh 
 
   * Home page contains top 5 most active submissions currently (submissions with least amount of time between comments). 
 
@@ -56,7 +56,6 @@ Technical Talking Points:
      Then it will filter out based on if the submission has greater than 1,000 comments and if it contains any adult content or topics.
      Usually once this filtering has completed, there are around 50 submissions found.
      I then check the newest comments for each submission and compare the time between the current and next comment. This total difference is then averaged and sorted.  
-     The top 5 submission with the least average time between each comment is then stored in a 
-     Django Model table, in this case called ActiveSubmissions. These records are fetched from the Django database each time the user browses to the index page. 
+     The top 5 submission with the least average time between each comment is then stored in a Django Model table, in this case called ActiveSubmissions. These records are fetched from the Django database each time the user browses to the index page. 
 
  
