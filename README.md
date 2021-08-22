@@ -44,7 +44,7 @@ Technical Talking Points:
 
   *  I have heavily utilized Promises in the comment streaming JavaScript code. Promises were great for this use case as I had 3 conditions 
      that would allow for comments to be refreshed or for the timer to be reset. The first most obvious use case is when the time the user has 
-     set to refresh comments has expired, this is done by resolving a promise after the competition of a simple setTimeout function call. 
+     set to refresh comments has expired, this is done by resolving a promise after the completion of a simple setTimeout function call. 
      The second Promise is triggered when the refresh options drop down is changed, this is so if a user changes from 15 seconds to 30 seconds for instance,
      the timer gets reset instead of refreshing after 15 or less seconds. The third Promise is triggered whenever the user clicks the manual refresh button,
      which only shows up if they scroll down past the header of page. This promise will immediately refresh the comments. 
