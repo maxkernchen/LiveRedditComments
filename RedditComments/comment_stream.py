@@ -29,7 +29,7 @@ def get_comments(submission_id, views_request, is_post):
         @return a dictionary with comments sorted by newest, the title and permalink if this is a POST request
     """
     config = configparser.ConfigParser()
-    config.read(os.getcwd() + '\RedditComments\praw.ini')
+    config.read(os.getcwd() + '/RedditComments/praw.ini')
     reddit_obj = praw.Reddit(client_id=config['bot1']['client_id'],
                              client_secret=config['bot1']['client_secret'],
                              user_agent=config['bot1']['user_agent'])
