@@ -9,6 +9,7 @@ from django.db import transaction
 from RedditComments.models import ActiveSubmissions
 from praw.models import MoreComments
 from better_profanity import profanity
+from pathlib import Path
 import wordninja
 import logging
 import os
@@ -38,8 +39,9 @@ def get_active_submissions():
 
     """
     # read the reddit config and login using our OAuth2 credentials
+    config_dir = Path('/RedditComments/praw.ini')
     config = configparser.ConfigParser()
-    config.read(os.getcwd() + '/RedditComments/praw.ini')
+    config.read(os.getcwd() / config_dir)
 
     try:
         reddit_obj = praw.Reddit(client_id=config['bot1']['client_id'],
@@ -80,8 +82,10 @@ def get_active_submissions():
                     temp_comment.author is None or isinstance(next_temp_comment, MoreComments) \
                     or next_temp_comment.stickied or next_temp_comment.author is None:
                 continue
-            avg_time_between_comments += (temp_comment.created_utc - next_temp_comment.created_utc)
-            num_comments += 1
+            difference = temp_comment.created_utc - next_temp_comment.created_utc
+            if(difference > 0):
+                avg_time_between_comments += (temp_comment.created_utc - next_temp_comment.created_utc)
+                num_comments += 1
         # store the avg time where the key is the index of the list of posts and the value is the average time
         if(num_comments > 0):
             avg_time_dict[i] = avg_time_between_comments / num_comments
@@ -135,7 +139,8 @@ def add_excluded_subreddits(all_list, reddit_obj):
 
     """
     excluded_subreddits = []
-    with open(os.getcwd() + '/RedditComments/excluded_subreddits_add.txt') as file:
+    excluded_subreddits_dir = Path('/RedditComments/excluded_subreddits_add.txt')
+    with open(os.getcwd() / excluded_subreddits_dir) as file:
         excluded_subreddits = file.read().splitlines()
     for subreddit in excluded_subreddits:
         all_list += list(reddit_obj.subreddit(subreddit.strip()).hot(limit=10))
@@ -152,7 +157,8 @@ def filter_posts(all_list):
     profanity.load_censor_words()
     # A file will be opened to read some custom profanity keywords which show up on more inappropriate subreddits
     custom_badwords = []
-    with open(os.getcwd() + '/RedditComments/custom_profanity_keywords.txt') as file:
+    custom_badwords_dir = Path('/RedditComments/custom_profanity_keywords.txt')
+    with open(os.getcwd() / custom_badwords_dir) as file:
         custom_badwords = file.read().splitlines()
     profanity.add_censor_words(custom_badwords)
     all_list = list(filter(lambda post: post.num_comments >= 1000 and not post.over_18, all_list))
