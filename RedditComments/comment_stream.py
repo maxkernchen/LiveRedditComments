@@ -7,6 +7,7 @@ import praw.models.reddit.more
 import prawcore.exceptions
 import requests
 from praw.models import MoreComments
+from pathlib import Path
 import os
 __author__  = 'Max Kernchen'
 __version__ = '1.0.'
@@ -29,7 +30,9 @@ def get_comments(submission_id, views_request, is_post):
         @return a dictionary with comments sorted by newest, the title and permalink if this is a POST request
     """
     config = configparser.ConfigParser()
-    config.read(os.getcwd() + '/RedditComments/praw.ini')
+    config_dir = Path('/RedditComments/praw.ini')
+    config.read(os.getcwd() / config_dir)
+    
     reddit_obj = praw.Reddit(client_id=config['bot1']['client_id'],
                              client_secret=config['bot1']['client_secret'],
                              user_agent=config['bot1']['user_agent'])
