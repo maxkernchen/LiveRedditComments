@@ -100,7 +100,7 @@ def parse_submission_id(comment_url):
 
 
 def detect_hyper_link(comment_text):
-    """ Simple helper method which will parse each comment and find if contains a hyperlink in the reddit format
+    """ Simple helper method which will parse each comment and find if it contains a hyperlink in the reddit format
        e.g. [URL NAME](www.url.com)
        -----params----
       @comment_text - text of the comment to check
