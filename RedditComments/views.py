@@ -43,7 +43,6 @@ def process_reddit_url(request):
             submission_id = comment_stream.parse_submission_id(comment_url)
             logger.info('Starting new stream for sub_id=' + submission_id)
 
-            request.session['submission_id'] = submission_id
             # initialize the cookie for storing alreay loaded comments, will be populated in comment stream call
             request.session['loaded_comments_cookie'] = []
             submission_comments_dict = comment_stream.get_comments(submission_id, request, True)
@@ -70,7 +69,7 @@ def process_reddit_url(request):
     # ajax call for refresh will be a GET request
     if request.method == 'GET':
         # pull session cookie for comment url
-        submission_id_get = request.session['submission_id']
+        submission_id_get = comment_stream.parse_ajax_submission_id(request.path)
         if submission_id_get:
             comments_dict = comment_stream.get_comments(submission_id_get, request, False)
             comment_list = comments_dict['comments']
