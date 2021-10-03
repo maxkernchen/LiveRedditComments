@@ -86,7 +86,7 @@ def parse_submission_id(comment_url):
      -----params----
     @comment_url - the url or submission id the user has passed into our form
 
-    @return - just the parsed submission_id which we will store in a session cookie
+    @return - just the parsed submission_id
     """
     index_start = comment_url.find('comments')
     # assume user has passed in just the 6 character submission id,
@@ -121,3 +121,16 @@ def detect_hyper_link(comment_text):
                        comment_text[closing_parentheses_index + 1:len(comment_text) - 1]
 
     return comment_text
+
+
+def parse_ajax_submission_id(processing_url):
+    """ Simple helper method which will parse the submission id from our processing url.
+    This is used for any ajax get call.
+     -----params----
+    @processing_url - processing url in format /process-url/123abc
+
+    @return - just the parsed submission_id
+    """
+    # this url will always be in the same format, which means the 13th character is the start of the 6 character
+    # alpha-numeric submission id
+    return processing_url[13:19]

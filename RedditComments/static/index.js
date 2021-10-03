@@ -14,9 +14,29 @@ for(let i = 0; i < cards.length; i++){
       $('#spinner').show();
       let formInput = document.getElementById('reddit_url');
       formInput.value = hiddenLink;
-      document.getElementById('form_comment_url').submit();
+      //$('#form_comment_url').attr('action', getSubmissionId(formInput.value));
+      $('#form_comment_url').submit();
     });
-  }
+}
+
+$("#form_comment_url").submit(function( event ) {
+ let formInput = document.getElementById('reddit_url');
+
+ $('#form_comment_url').attr('action', getSubmissionId(formInput.value));
+
+});
+// add the submission id to the processing url. This is so we have a unique url which allows the user to open
+// multiple sessions for different streams of comments.
+function getSubmissionId(redditUrl){
+    let subId = "/process-url/";
+    let index = redditUrl.toLowerCase().search("comments")
+    if(index >= 0){
+      subId += redditUrl.substr(index + 9, 6) + "/";
+      console.log(subId);
+    }
+
+    return subId;
+}
 
 
 

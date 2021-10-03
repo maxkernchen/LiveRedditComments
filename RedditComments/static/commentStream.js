@@ -66,8 +66,9 @@ async function startRace (){
         if(value == 2){
           $('html').animate({ scrollTop: 0 }, 'slow');
         }
+        let url = window.location.pathname
         $.ajax({
-          url: '/process-url/',
+          url: url,
           type: 'get',
           success: function(data, textStatus, jqXHR) {
             // status will be 204 for no new comments found
@@ -269,4 +270,5 @@ function loadOrCreateCookie(){
       updateThemeCookie(true);
   }
 }
+
 
