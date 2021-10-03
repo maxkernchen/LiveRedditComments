@@ -1,10 +1,9 @@
 
 <div id="new-comments">
-{%for item in comments_template%}
+    {%for item in comments_template%}
 
-        <li class="list-group-item center">{{item}}
+        <li class="list-group-item center">{{item|safe}}
         </li>
-
     {% endfor %}
 </div>
 

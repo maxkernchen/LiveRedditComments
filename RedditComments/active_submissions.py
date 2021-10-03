@@ -39,9 +39,9 @@ def get_active_submissions():
 
     """
     # read the reddit config and login using our OAuth2 credentials
-    config_dir = Path('/RedditComments/praw.ini')
+    config_dir = Path(os.getcwd() + '/RedditComments/praw.ini')
     config = configparser.ConfigParser()
-    config.read(os.getcwd() / config_dir)
+    config.read(config_dir)
 
     try:
         reddit_obj = praw.Reddit(client_id=config['bot1']['client_id'],
@@ -139,8 +139,8 @@ def add_excluded_subreddits(all_list, reddit_obj):
 
     """
     excluded_subreddits = []
-    excluded_subreddits_dir = Path('/RedditComments/excluded_subreddits_add.txt')
-    with open(os.getcwd() / excluded_subreddits_dir) as file:
+    excluded_subreddits_dir = Path(os.getcwd() + '/RedditComments/excluded_subreddits_add.txt')
+    with open(excluded_subreddits_dir) as file:
         excluded_subreddits = file.read().splitlines()
     for subreddit in excluded_subreddits:
         all_list += list(reddit_obj.subreddit(subreddit.strip()).hot(limit=10))
@@ -157,8 +157,8 @@ def filter_posts(all_list):
     profanity.load_censor_words()
     # A file will be opened to read some custom profanity keywords which show up on more inappropriate subreddits
     custom_badwords = []
-    custom_badwords_dir = Path('/RedditComments/custom_profanity_keywords.txt')
-    with open(os.getcwd() / custom_badwords_dir) as file:
+    custom_badwords_dir = Path(os.getcwd() + '/RedditComments/custom_profanity_keywords.txt')
+    with open(custom_badwords_dir) as file:
         custom_badwords = file.read().splitlines()
     profanity.add_censor_words(custom_badwords)
     all_list = list(filter(lambda post: post.num_comments >= 1000 and not post.over_18, all_list))

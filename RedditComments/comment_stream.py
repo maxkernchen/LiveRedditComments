@@ -30,9 +30,9 @@ def get_comments(submission_id, views_request, is_post):
         @return a dictionary with comments sorted by newest, the title and permalink if this is a POST request
     """
     config = configparser.ConfigParser()
-    config_dir = Path('/RedditComments/praw.ini')
-    config.read(os.getcwd() / config_dir)
-    
+    config_dir = Path(os.getcwd() + '/RedditComments/praw.ini')
+    config.read(config_dir)
+
     reddit_obj = praw.Reddit(client_id=config['bot1']['client_id'],
                              client_secret=config['bot1']['client_secret'],
                              user_agent=config['bot1']['user_agent'])
@@ -66,7 +66,8 @@ def get_comments(submission_id, views_request, is_post):
         # don't track deleted comments or comments which we've already loaded
         if(comment.author is not None and comment.id not in already_loaded_comments and not comment.stickied):
             comments_returned.append(comment.author.name + " - " +
-                                     str(datetime.fromtimestamp(comment.created_utc)) + " - " + comment.body)
+                                     str(datetime.fromtimestamp(comment.created_utc)) + " - " +
+                                     detect_hyper_link(comment.body))
 
     #update session cookie with newly streamed comments
     views_request.session['loaded_comments_cookie'] = comments_cookie
@@ -98,3 +99,25 @@ def parse_submission_id(comment_url):
         return comment_url[index_start+9:index_start+15]
 
 
+def detect_hyper_link(comment_text):
+    """ Simple helper method which will parse each comment and find if it contains a hyperlink in the reddit format
+       e.g. [URL NAME](www.url.com)
+       -----params----
+      @comment_text - text of the comment to check
+
+      @return - the comment as is or parsed into an anchor tag for a hyperlink
+      """
+    open_bracket_index    = comment_text.find('[')
+    closing_bracket_index = comment_text.find(']')
+    opening_parentheses_index = comment_text.find('(')
+    closing_parentheses_index = comment_text.find(')')
+    # verify bracket and paranthese are in the right place
+    if(open_bracket_index < closing_bracket_index and opening_parentheses_index < closing_parentheses_index and
+    opening_parentheses_index > open_bracket_index and opening_parentheses_index > closing_bracket_index):
+        anchor_text = '<a href="{0}">{1}</a>'
+        comment_text = comment_text[0:open_bracket_index] + \
+                       anchor_text.format(comment_text[opening_parentheses_index + 1:closing_parentheses_index],
+                                          comment_text[open_bracket_index + 1:closing_bracket_index]) + \
+                       comment_text[closing_parentheses_index + 1:len(comment_text) - 1]
+
+    return comment_text

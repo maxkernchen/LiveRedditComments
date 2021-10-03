@@ -60,15 +60,17 @@
         </div>
         <br>
         <br>
+
         <div id="comments">
             <ul class="list-group list-group-flush">
-            <div id="inner-comment-list">
-                {%for item in comments_template%}
-                    <li class="list-group-item">{{item}}</li>
-                {% endfor %}
-            </div>
-        </ul>
+                <div id="inner-comment-list">
+                    {%for item in comments_template%}
+                        <li class="list-group-item">{{item|safe}}</li>
+                    {% endfor %}
+                </div>
+            </ul>
         </div>
+
         <button id="refresh-btn" class="btn btn-primary">
             <i class="fas fa-sync"></i>
         </button>
