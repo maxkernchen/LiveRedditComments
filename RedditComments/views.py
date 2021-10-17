@@ -42,13 +42,17 @@ def process_reddit_url(request):
             comment_url = form.cleaned_data['reddit_url']
             submission_id = comment_stream.parse_submission_id(comment_url)
             logger.info('Starting new stream for sub_id=' + submission_id)
+            # get local browser tz offset, this is stored in hidden input field.
+            tz_offset = request.POST['time_zone_offset']
 
             # initialize the cookie for storing alreay loaded comments, will be populated in comment stream call
             request.session['loaded_comments_cookie'] = []
-            submission_comments_dict = comment_stream.get_comments(submission_id, request, True)
+            submission_comments_dict = comment_stream.get_comments(submission_id, request, True, tz_offset)
+
             if(submission_comments_dict is None):
                 return render(request, 'index.html', {'error': 'invalid url', 'active_submissions_template':
                     active_submissions.query_active_submissions()})
+
             submission_title = submission_comments_dict['title']
             submission_permalink = submission_comments_dict['permalink']
             comments = submission_comments_dict['comments']
@@ -66,12 +70,14 @@ def process_reddit_url(request):
             # return with a error message defiend in the HTML template
             return render(request, 'index.html', {'error': 'invalid url', 'active_submissions_template':
                                               active_submissions.query_active_submissions()})
-    # ajax call for refresh will be a GET request
-    if request.method == 'GET':
-        # pull session cookie for comment url
+    # ajax call for refresh of comments will be a GET request
+    elif request.method == 'GET':
+        # use current url to find submission id.
         submission_id_get = comment_stream.parse_ajax_submission_id(request.path)
+        # get tz offset from ajax data parameters
+        tz_offset = request.GET['time_zone_offset']
         if submission_id_get:
-            comments_dict = comment_stream.get_comments(submission_id_get, request, False)
+            comments_dict = comment_stream.get_comments(submission_id_get, request, False, tz_offset)
             comment_list = comments_dict['comments']
             if(comment_list is not None and len(comment_list) > 0):
                 return render(request, 'comment_body.html', {'comments_template': comment_list})

@@ -1,6 +1,7 @@
 $('#spinner').hide();
 $('#refresh-btn').hide();
 
+var offset = new Date().getTimezoneOffset();
 // bool for when scrolled down past our header, this for tracking if we should refresh or not.
 // Similar to youtube or twitch comments where scrolling stops the refreshing. 
 var scrolledDown = false;
@@ -69,6 +70,9 @@ async function startRace (){
         let url = window.location.pathname
         $.ajax({
           url: url,
+          data: { 
+            time_zone_offset: offset
+          },
           type: 'get',
           success: function(data, textStatus, jqXHR) {
             // status will be 204 for no new comments found
