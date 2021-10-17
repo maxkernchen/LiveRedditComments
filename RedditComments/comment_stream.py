@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import configparser
 import praw
 import praw.config
@@ -17,7 +17,7 @@ __email__   = 'max.f.kernchen@gmail.com'
 post request from our index form submission.
 """
 
-def get_comments(submission_id, views_request, is_post):
+def get_comments(submission_id, views_request, is_post, tz_offset):
     """ Method get_comments will take in a submission_id (6 character alphanumeric value) from views.py
         and find the submission/newest comments. These comments are then compared to already loaded comments
         stored in the session cookie. Any comments comments that different from the already loaded ones are returned to
@@ -66,8 +66,9 @@ def get_comments(submission_id, views_request, is_post):
         # don't track deleted comments or comments which we've already loaded
         if(comment.author is not None and comment.id not in already_loaded_comments and not comment.stickied):
             comments_returned.append(comment.author.name + " - " +
-                                     str(datetime.fromtimestamp(comment.created_utc)) + " - " +
-                                     detect_hyper_link(comment.body))
+                                     str(datetime.fromtimestamp(comment.created_utc - (int(tz_offset) * 60),
+                                                                timezone.utc).replace(tzinfo=None))
+                                     + " - " + detect_hyper_link(comment.body))
 
     #update session cookie with newly streamed comments
     views_request.session['loaded_comments_cookie'] = comments_cookie

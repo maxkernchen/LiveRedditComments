@@ -2,6 +2,9 @@ $('#spinner').hide();
 // get all bootstrap active cards displayed on the home page
 cards = document.getElementsByClassName('active-card');
 
+var offset = new Date().getTimezoneOffset();
+
+
 // Loop through each card and add an event listener in its link element at the bottom.
 // This event when triggered will fill in the form and submit it with the submission the card represents.
 // It will also hide the input form and display a loading message/icon.
@@ -20,6 +23,9 @@ for(let i = 0; i < cards.length; i++){
 
 $("#form_comment_url").submit(function( event ) {
  let formInput = document.getElementById('reddit_url');
+
+ $("#form_comment_url").append('<input type="hidden" name="time_zone_offset" value="' + offset + '" />');
+ // change url to include submission id
  $('#form_comment_url').attr('action', getSubmissionId(formInput.value));
 });
 
@@ -30,9 +36,7 @@ function getSubmissionId(redditUrl){
     let index = redditUrl.toLowerCase().search("comments")
     if(index >= 0){
       subId += redditUrl.substr(index + 9, 6) + "/";
-      console.log(subId);
     }
-
     return subId;
 }
 
