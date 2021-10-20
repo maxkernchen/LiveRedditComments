@@ -20,6 +20,6 @@ from django.views.generic import RedirectView
 from django.conf.urls import url
 urlpatterns = [
     path('index/', views.index, name='index'),
-    url(r'^process-url\/\w{6}\/$', views.process_reddit_url, name='reddit_url'),
+    url(r'^process-url\/\w*\/$', views.process_reddit_url, name='reddit_url'),
     url(r'^favicon\.ico$', RedirectView.as_view(url='/static/images/favicon.ico'))
 ]

@@ -37,6 +37,10 @@ function getSubmissionId(redditUrl){
     if(index >= 0){
       subId += redditUrl.substr(index + 9, 6) + "/";
     }
+    // assume user has just passed in the submission id, if it's not valid views.py will handle it
+    else{
+        subId += redditUrl + "/";
+    }
     return subId;
 }
 
