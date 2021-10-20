@@ -257,7 +257,7 @@ and then still have the same theme when returing later
 function updateThemeCookie(lightBool) {
   let date = new Date();
   date.setTime(date.getTime() + (7 * 24 * 60 * 60 * 1000));
-  document.cookie = 'theme_cookie=' + lightBool + '; ' + 'expires=' + date.toUTCString();
+  document.cookie = 'theme_cookie=' + lightBool + '; ' + 'expires=' + date.toUTCString() + ";path=/";
   lightTheme = lightBool;
 }
 // helper method which will check if the theme cookie exists or not.
@@ -274,5 +274,4 @@ function loadOrCreateCookie(){
       updateThemeCookie(true);
   }
 }
-
 
