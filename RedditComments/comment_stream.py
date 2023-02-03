@@ -90,14 +90,18 @@ def parse_submission_id(comment_url):
     @return - just the parsed submission_id
     """
     index_start = comment_url.find('comments')
-    # assume user has passed in just the 6 character submission id,
+    # assume user has passed in just the submission id,
     # if it's incorrect it will be caught by try catch in get_comments
     if(index_start == -1):
         return comment_url
+   
     # parse submission id which will start 9 characters after comments keyword in the url
-    # and is always 6 characters in length
+    # and will be at least 5 chars, but can be more
     else:
-        return comment_url[index_start+9:index_start+15]
+        index_start += 9
+        # find ending slash, this will then be our full submission id
+        index_end = comment_url.find("/", index_start)
+        return comment_url[index_start:index_end]
 
 
 def detect_hyper_link(comment_text):
@@ -132,6 +136,5 @@ def parse_ajax_submission_id(processing_url):
 
     @return - just the parsed submission_id
     """
-    # this url will always be in the same format, which means the 13th character is the start of the 6 character
-    # alpha-numeric submission id
-    return processing_url[13:19]
+    # get the submission url it will be at least 5 characters
+    return processing_url[13:len(processing_url) - 1]

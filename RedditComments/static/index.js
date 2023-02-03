@@ -35,8 +35,11 @@ function getSubmissionId(redditUrl){
     let subId = "/process-url/";
     let index = redditUrl.toLowerCase().search("comments")
     if(index >= 0){
-      subId += redditUrl.substr(index + 9, 6) + "/";
+      let start = index + 9
+      let end = redditUrl.indexOf("/", start)
+      subId += redditUrl.substr(start, end - start) + "/";
     }
+    // as
     // assume user has just passed in the submission id, if it's not valid views.py will handle it
     else{
         subId += redditUrl + "/";
