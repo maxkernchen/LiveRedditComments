@@ -6,11 +6,10 @@ Live Reddit Comments is a Django web application which will allow a user to stre
 
   
 
-It is currently hosted on a Linux droplet at: 
+It is currently hosted below:
 
-  
 
-http://64.227.16.206:8000/index/ 
+http://192.210.137.126:8000/reddit-comment-stream/
 
   
 
