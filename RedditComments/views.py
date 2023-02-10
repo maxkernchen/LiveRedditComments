@@ -55,7 +55,11 @@ def process_reddit_url(request):
 
             submission_title = submission_comments_dict['title']
             submission_permalink = submission_comments_dict['permalink']
-            comments = submission_comments_dict['comments']
+            comments_arthur = submission_comments_dict['comments_arthur']
+            comments_time = submission_comments_dict['comments_time']
+            comments_body = submission_comments_dict['comments_body']
+
+            comments = zip(comments_arthur, comments_time, comments_body)
             # Comments is None if any exceptions occur on the PRAW side
             if comments is not None  and submission_title is not None and \
                     submission_permalink is not None:
@@ -78,8 +82,13 @@ def process_reddit_url(request):
         tz_offset = request.GET['time_zone_offset']
         if submission_id_get:
             comments_dict = comment_stream.get_comments(submission_id_get, request, False, tz_offset)
-            comment_list = comments_dict['comments']
-            if(comment_list is not None and len(comment_list) > 0):
+
+            comments_arthur = comments_dict['comments_arthur']
+            comments_time = comments_dict['comments_time']
+            comments_body = comments_dict['comments_body']
+
+            comment_list = zip(comments_arthur, comments_time, comments_body)
+            if(comment_list is not None and len(comments_body) > 0):
                 return render(request, 'comment_body.html', {'comments_template': comment_list})
             else:
                 # Status 204 is okay for ajax response as it will then just call again after the refresh rate.

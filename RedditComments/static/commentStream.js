@@ -11,6 +11,7 @@ var lightTheme = true;
 
 loadOrCreateCookie();
 toggleTheme(true);
+updateAllDateTimeLocale();
 
 /* Create three promises that will race each other.
 1. promise1 - This promise is only resolved if refresh rate is not 'Don't Refresh' ( > 0).
@@ -115,6 +116,7 @@ async function reloadComments(data){
   // make sure theme persists between ajax calls.
   toggleTheme(true);
   $('#new-comments').hide();
+  updateNewDateTimeLocale();
   $('#new-comments').fadeIn(500);
   // wait so the div is not removed before it finishes fading in
   await new Promise(r => setTimeout(r, 500));
@@ -273,5 +275,26 @@ function loadOrCreateCookie(){
   else{
       updateThemeCookie(true);
   }
+}
+/*
+  Update every comment's date time into the  user's locale
+*/
+function updateAllDateTimeLocale(){
+  $('.comment-time').each(function() {
+    const commentTime = new Date(Date.parse($(this).html()));
+    const commentTimeToLocale = commentTime.toLocaleString();
+    $(this).replaceWith(commentTimeToLocale);
+   });
+}
+
+/*
+  Update new comment's date time into the  user's locale
+*/
+function updateNewDateTimeLocale(){
+  $('#new-comments').children().each(function() {
+    const commentTime = new Date(Date.parse($(this).children().html()));
+    const commentTimeToLocale = commentTime.toLocaleString();
+    $(this).children().replaceWith(commentTimeToLocale);
+   });
 }
 

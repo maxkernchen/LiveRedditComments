@@ -30,6 +30,9 @@ li{
 .post-link:hover{
    color: lightblue
 }
+.comment-time{
+   display: inline-block;
+}
 #refresh-btn{
    width: 50px;
    height: 50px;

@@ -60,15 +60,17 @@ def get_comments(submission_id, views_request, is_post, tz_offset):
         # store just the comment id hex value to only load new comments between ajax calls
         comments_cookie.append(comment.id)
 
-    comments_returned = []
+    comments_arthur = []
+    comments_time = []
+    comments_body = []
     for comment in comments_sorted:
         i += 1
         # don't track deleted comments or comments which we've already loaded
         if(comment.author is not None and comment.id not in already_loaded_comments and not comment.stickied):
-            comments_returned.append(comment.author.name + " - " +
-                                     str(datetime.fromtimestamp(comment.created_utc - (int(tz_offset) * 60),
-                                                                timezone.utc).replace(tzinfo=None))
-                                     + " - " + detect_hyper_link(comment.body))
+            comments_arthur.append(comment.author.name)
+            comments_time.append('<div class=\"comment-time\">' + str(datetime.fromtimestamp(comment.created_utc - (int(tz_offset) * 60),
+                                                                timezone.utc).replace(tzinfo=None)) + '</div>')
+            comments_body.append(detect_hyper_link(comment.body))
 
     #update session cookie with newly streamed comments
     views_request.session['loaded_comments_cookie'] = comments_cookie
@@ -78,7 +80,9 @@ def get_comments(submission_id, views_request, is_post, tz_offset):
     if(is_post):
         submission_comments_dict['title'] = submission.subreddit_name_prefixed + ' | ' + submission.title
         submission_comments_dict['permalink'] = 'https://www.reddit.com' + submission.permalink
-    submission_comments_dict['comments'] = comments_returned
+    submission_comments_dict['comments_arthur'] = comments_arthur
+    submission_comments_dict['comments_time'] = comments_time
+    submission_comments_dict['comments_body'] = comments_body
     return submission_comments_dict
 
 def parse_submission_id(comment_url):
