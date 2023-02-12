@@ -47,13 +47,15 @@ async function startRace (){
   // second promise which is resolved whenever the refresh rate drop is changed.
   let promise2 = new Promise(function(resolve) {
       $('#refresh-rate-options').change(function(){
+          let refreshRateSelect = document.getElementById('refresh-rate-options');
+          let refreshRateInt = refreshRateSelect.options[refreshRateSelect.selectedIndex].value;
+          updateRefreshRateCookie(refreshRateInt)
           resolve('-2');
       });
   });
 
   let promise3 = new Promise(function(resolve) {
     $('#refresh-btn').click(function(){
-        console.log('in Promise3');
         resolve('2');
     });
   });
@@ -251,7 +253,6 @@ function scrollListener(){
 
 window.addEventListener('scroll', scrollListener);
 
-
 /* create a theme cookie which lasts for 1 week, this allows the user to exit
 and then still have the same theme when returing later
 @param lightBool - boolean value for if this should be light or dark theme (light == true, dark == false)
@@ -262,11 +263,21 @@ function updateThemeCookie(lightBool) {
   document.cookie = 'theme_cookie=' + lightBool + '; ' + 'expires=' + date.toUTCString() + ";path=/";
   lightTheme = lightBool;
 }
+/* create a refresh rate cookie which lasts for 1 week, this allows the user to exit
+and then still have the same refresh rate when returing later
+@param refreshRate - int value for how often the comments should refresh
+*/
+function updateRefreshRateCookie(refreshRate) {
+  let date = new Date();
+  date.setTime(date.getTime() + (7 * 24 * 60 * 60 * 1000));
+  document.cookie = 'refresh_rate_cookie=' + refreshRate + '; ' + 'expires=' + date.toUTCString() + ";path=/";
+  setRefreshRate(refreshRate);
+}
 // helper method which will check if the theme cookie exists or not.
 // If it does exist apply existing theme else create new cookie and default to light theme.
 function loadOrCreateCookie(){
   if(document.cookie.indexOf('theme_cookie=') >= 0){
-     let boolStr  = document.cookie
+     let boolStr = document.cookie
      .split('; ')
      .find(row => row.startsWith('theme_cookie='))
      .split('=')[1];
@@ -275,6 +286,17 @@ function loadOrCreateCookie(){
   else{
       updateThemeCookie(true);
   }
+  
+  if(document.cookie.indexOf('refresh_rate_cookie=') >= 0){
+    let refreshRateStr = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('refresh_rate_cookie='))
+    .split('=')[1];;
+    setRefreshRate(refreshRateStr);
+ }
+ else{
+    updateRefreshRateCookie("30000");
+ }
 }
 /*
   Update every comment's date time into the  user's locale
@@ -296,5 +318,12 @@ function updateNewDateTimeLocale(){
     const commentTimeToLocale = commentTime.toLocaleString();
     $(this).children().replaceWith(commentTimeToLocale);
    });
+}
+
+/*
+  set refresh rate if it is stored in a cookie
+*/
+function setRefreshRate(refreshRate){
+  $('#refresh-rate-options').val(refreshRate);
 }
 
