@@ -20,6 +20,11 @@
     min-height: 35vh;
     box-shadow: 10px 7px 3px;
 }
+.active-card-mobile{
+    width: 90vw;
+    margin: 5%;
+    box-shadow: 10px 7px 3px;
+}
 .active-body{
     background-color: var(--off-white);
 }
@@ -33,7 +38,7 @@
     min-width:40vw;
 }
 .input-fields{
-    display: inline-flex;
+    display: inline;
     justify-items: center;
     flex-direction: column;
 }

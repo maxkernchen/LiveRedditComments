@@ -1,8 +1,18 @@
 $('#spinner').hide();
 // get all bootstrap active cards displayed on the home page
-cards = document.getElementsByClassName('active-card');
+var cards = document.getElementsByClassName('card');
 
 var offset = new Date().getTimezoneOffset();
+
+if(isMobile()){
+  for(let i = 0; i < cards.length; i++){
+    cards[i].classList.remove('active-card');
+    cards[i].classList.add('active-card-mobile');
+  }
+
+  //cards = document.getElementsByClassName('active-card-mobile');
+}
+
 
 
 // Loop through each card and add an event listener in its link element at the bottom.
@@ -45,6 +55,10 @@ function getSubmissionId(redditUrl){
         subId += redditUrl + "/";
     }
     return subId;
+}
+
+function isMobile() {
+  return /Android|webOS|iPhone|iPad|iPod|IEMobile|BlackBerry|Opera Mini/i.test(navigator.userAgent);
 }
 
 
