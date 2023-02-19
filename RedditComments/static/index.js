@@ -1,5 +1,5 @@
 $('#spinner').hide();
-// get all bootstrap active cards displayed on the home page
+// get all bootstrap active submission cards displayed on the home page
 var cards = document.getElementsByClassName('card');
 
 var offset = new Date().getTimezoneOffset();
@@ -9,11 +9,7 @@ if(isMobile()){
     cards[i].classList.remove('active-card');
     cards[i].classList.add('active-card-mobile');
   }
-
-  //cards = document.getElementsByClassName('active-card-mobile');
 }
-
-
 
 // Loop through each card and add an event listener in its link element at the bottom.
 // This event when triggered will fill in the form and submit it with the submission the card represents.
