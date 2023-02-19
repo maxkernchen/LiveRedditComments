@@ -3,7 +3,7 @@ $('#spinner').hide();
 var cards = document.getElementsByClassName('card');
 
 var offset = new Date().getTimezoneOffset();
-
+// if device is mobile use active-card-mobile css to format active submissions for mobile
 if(isMobile()){
   for(let i = 0; i < cards.length; i++){
     cards[i].classList.remove('active-card');
@@ -52,7 +52,7 @@ function getSubmissionId(redditUrl){
     }
     return subId;
 }
-
+// check if device is mobile via user agent
 function isMobile() {
   return /Android|webOS|iPhone|iPad|iPod|IEMobile|BlackBerry|Opera Mini/i.test(navigator.userAgent);
 }
