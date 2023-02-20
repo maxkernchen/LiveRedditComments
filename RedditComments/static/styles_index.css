@@ -6,6 +6,9 @@
     width: 99%;
     font-family: 'Montserrat', sans-serif;
   }
+div{
+    overflow-wrap: break-word;
+}
 .center{
     margin: 0 auto;
 }
