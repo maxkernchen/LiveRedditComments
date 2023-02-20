@@ -9,6 +9,9 @@ if(isMobile()){
     cards[i].classList.remove('active-card');
     cards[i].classList.add('active-card-mobile');
   }
+  let inputForm = document.getElementById('input-form');
+  inputForm.classList.remove('input-fields');
+  inputForm.classList.add('input-fields-mobile');
 }
 
 // Loop through each card and add an event listener in its link element at the bottom.

@@ -38,6 +38,11 @@
     min-width:40vw;
 }
 .input-fields{
+    display: inline-block;
+    justify-items: center;
+    flex-direction: column;
+}
+.input-fields-mobile{
     display: inline;
     justify-items: center;
     flex-direction: column;
