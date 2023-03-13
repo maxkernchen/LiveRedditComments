@@ -105,7 +105,11 @@ def parse_submission_id(comment_url):
         index_start += 9
         # find ending slash, this will then be our full submission id
         index_end = comment_url.find("/", index_start)
-        return comment_url[index_start:index_end]
+        # if the end slash is missing assume the last character is the full submission id
+        if(index_end == -1):
+            return comment_url[index_start:len(comment_url)]
+        else:
+            return comment_url[index_start:index_end]
 
 
 def detect_hyper_link(comment_text):

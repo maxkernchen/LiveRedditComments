@@ -20,5 +20,5 @@ from django.views.generic import RedirectView
 from django.conf.urls import url
 urlpatterns = [
     path('reddit-comment-stream/', views.index, name='index'),
-    url(r'^process-url\/\w*\/$', views.process_reddit_url, name='reddit_url')
+    url(r'^process-url\/*.*$', views.process_reddit_url, name='reddit_url')
 ]
