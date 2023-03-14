@@ -145,4 +145,10 @@ def parse_ajax_submission_id(processing_url):
     @return - just the parsed submission_id
     """
     # get the submission url it will be at least 5 characters
-    return processing_url[13:len(processing_url) - 1]
+    submission_id = processing_url[13:len(processing_url)]
+    # the url can either have the last slash or not
+    if(submission_id[-1] == "/"):
+        return submission_id[:-1]
+    else:
+        return submission_id
+    

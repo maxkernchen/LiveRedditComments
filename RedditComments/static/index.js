@@ -46,7 +46,13 @@ function getSubmissionId(redditUrl){
     if(index >= 0){
       let start = index + 9
       let end = redditUrl.indexOf("/", start)
-      subId += redditUrl.substr(start, end - start) + "/";
+      // it's okay to be missing ending slash
+      if(end == -1){
+        subId += redditUrl.substring(start, redditUrl.length + 1);
+      }
+      else{
+        subId += redditUrl.substring(start, end) + "/";
+      }
     }
     // as
     // assume user has just passed in the submission id, if it's not valid views.py will handle it
